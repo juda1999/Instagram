@@ -1,9 +1,8 @@
-// src/pages/SignUp.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const SignUp: React.FC = () => {
+export const SignUp: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -66,5 +65,3 @@ const SignUp: React.FC = () => {
     </div>
   );
 };
-
-export default SignUp;

@@ -1,9 +1,8 @@
-// src/pages/SignIn.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const SignIn: React.FC = () => {
+export const SignIn: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,9 +17,8 @@ const SignIn: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('/api/login', { email, password });
+      const response = await axios.post('/auth/login', { email, password });
 
-      // On success, store the JWT token and redirect to the home page
       localStorage.setItem('accessToken', response.data.accessToken);
       navigate('/');
     } catch (err) {
@@ -56,5 +54,3 @@ const SignIn: React.FC = () => {
     </div>
   );
 };
-
-export default SignIn;

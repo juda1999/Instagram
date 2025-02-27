@@ -7,6 +7,7 @@ import { postsRouter } from "./routes/posts.router";
 import { authRouter } from "./routes/auth.router";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
+import cors from "cors"
 
 export const app = express();
 dotenv.config();
@@ -16,6 +17,7 @@ const db = mongoose.connection;
 db.on('error', (err) => console.error(err));
 db.once('open', () => console.log('Connected to Mongo :)'));
 
+app.use(cors());
 app.use(bodyParser.urlencoded({extended: true, limit:'1mb'}));
 app.use(bodyParser.json());
 

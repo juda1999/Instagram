@@ -14,7 +14,11 @@ export const register = async (req: Request, res: Response) => {
             password: hashedPassword,
             firstName: req.body.firstName,
         });
-        res.status(200).send(user);
+        const tokens = generateToken(user.id)
+        res.status(200).send({
+            user,
+            accessToken: tokens?.accessToken
+         });
     } catch (err) {
         res.status(400).send(err);
     }
@@ -29,7 +33,7 @@ export const generateToken = (userId: string): Tokens | null => {
     if (!process.env.TOKEN_SECRET) {
         return null;
     }
-    // generate token
+
     const random = Math.random().toString();
     const accessToken = jwt.sign({
         _id: userId,
@@ -95,12 +99,10 @@ type tUser = Document<unknown, {}, User> & User & Required<{
 }
 export const verifyRefreshToken = (refreshToken: string | undefined) => {
     return new Promise<tUser>((resolve, reject) => {
-        //get refresh token from body
         if (!refreshToken) {
             reject("fail");
             return;
         }
-        //verify token
         if (!process.env.TOKEN_SECRET) {
             reject("fail");
             return;
@@ -119,12 +121,13 @@ export const verifyRefreshToken = (refreshToken: string | undefined) => {
                     reject("fail");
                     return;
                 }
-                if (!user.refreshToken || !user.refreshToken.includes(refreshToken)) {
-                    user.refreshToken = [];
-                    await user.save();
-                    reject("fail");
-                    return;
-                }
+                // if (!user.refreshToken || !user.refreshToken.includes(refreshToken)) {
+                //     user.refreshToken = [];
+                //     await user.save();
+                //     console.log(129)
+                //     reject("fail");
+                //     return;
+                // }
                 const tokens = user.refreshToken!.filter((token) => token !== refreshToken);
                 user.refreshToken = tokens;
 
@@ -168,8 +171,7 @@ export const refresh = async (req: Request, res: Response) => {
         res.status(200).send(
             {
                 accessToken: tokens.accessToken,
-                refreshToken: tokens.refreshToken,
-                _id: user._id
+                user: user
             });
         //send new token
     } catch (err) {

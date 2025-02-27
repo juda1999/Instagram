@@ -1,12 +1,35 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import './SignIn.css';
+import { AppContext, User } from '../../App';
 
 export const SignIn: React.FC = () => {
+  const {setUser} = useContext(AppContext)
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  async function handleOnLoad() {
+    const token = localStorage.getItem('accessToken');
+          if(token) {
+            try {
+              const response = await axios.post<{ user: User; accessToken: string}>('http://localhost:3001/auth/refresh', { token });
+                if(response.data.user) {
+                  localStorage.setItem("accessToken", response.data.accessToken)
+                  setUser(response.data.user)
+                  navigate("/")
+              }
+            } catch (error) {
+            }
+          }
+  }
+
+  useEffect(() => {
+    handleOnLoad();
+  },
+  [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,7 +40,7 @@ export const SignIn: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('/auth/login', { email, password });
+      const response = await axios.post('http://localhost:3001/auth/login', { email, password });
 
       localStorage.setItem('accessToken', response.data.accessToken);
       navigate('/');
@@ -27,11 +50,11 @@ export const SignIn: React.FC = () => {
   };
 
   return (
-    <div>
+    <div className='container'>
       <h2>Sign In</h2>
       {error && <div className="error">{error}</div>}
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className='email'>
           <label>Email:</label>
           <input
             type="email"
@@ -40,7 +63,7 @@ export const SignIn: React.FC = () => {
             required
           />
         </div>
-        <div>
+        <div className='password'>
           <label>Password:</label>
           <input
             type="password"
@@ -49,8 +72,9 @@ export const SignIn: React.FC = () => {
             required
           />
         </div>
-        <button type="submit">Sign In</button>
+        <button className='sign-in' type="submit">Sign In</button>
       </form>
+      <button className='register' onClick={() => navigate("/signUp")}>Register</button>
     </div>
   );
 };

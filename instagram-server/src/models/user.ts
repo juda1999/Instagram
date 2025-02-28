@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 export interface User {
     _id?: string;
     password: string;
+    username: string;
     firstName: string;
     lastName?: string;
     email: string;
@@ -18,6 +19,10 @@ const userSchema = new mongoose.Schema<User>({
         type: String,
         required: false,
     },
+    username: {
+        type: String,
+        required: true
+    },
     email: {
       type: String,
       required: true,
@@ -32,6 +37,6 @@ const userSchema = new mongoose.Schema<User>({
       default: [],
     },
   });
-  
+
   export const userModel = mongoose.model<User>("Users", userSchema);
-  
+

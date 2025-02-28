@@ -27,8 +27,8 @@ class PostsController extends BaseController<Post> {
 
   async getPagedPosts(req: Request, res: Response) {
     const filterByUploader = req.query.uploader;
-    const skip = parseInt(req.query.skip as string) || 0;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const skip = parseInt(req.body.skip) || 0;
+    const limit = parseInt(req.body.limit) || 10;
 
     try {
       let posts;

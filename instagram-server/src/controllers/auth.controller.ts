@@ -151,7 +151,7 @@ export const logout = async (req: Request, res: Response) => {
 
 export const getUserInfo = async (req: Request, res: Response) => {
     try {
-        const user = await userModel.findById(req.body.userId);
+        const user = await userModel.findById(req.query.user);
         res.status(200).send({ user })
     } catch (error) {
         res.status(400).send("fail");

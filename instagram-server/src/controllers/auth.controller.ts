@@ -49,7 +49,7 @@ export const generateToken = (userId: string): Tokens | null => {
         process.env.TOKEN_SECRET,
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRES });
     return {
-        accessToken: accessToken,
+        accessToken: `Bearer ${accessToken}`,
         refreshToken: refreshToken
     };
 };
@@ -84,7 +84,7 @@ export const login = async (req: Request, res: Response) => {
             {
                 accessToken: tokens.accessToken,
                 refreshToken: tokens.refreshToken,
-                _id: user._id
+                user
             });
 
     } catch (err) {
@@ -100,16 +100,20 @@ type tUser = Document<unknown, {}, User> & User & Required<{
 export const verifyRefreshToken = (refreshToken: string | undefined) => {
     return new Promise<tUser>((resolve, reject) => {
         if (!refreshToken) {
+            console.log(103)
+
             reject("fail");
             return;
         }
         if (!process.env.TOKEN_SECRET) {
+            console.log(107)
             reject("fail");
             return;
         }
         jwt.verify(refreshToken, process.env.TOKEN_SECRET, async (err: any, payload: any) => {
             if (err) {
                 reject("fail");
+                console.log(113)
                 return
             }
             //get the user id fromn token
@@ -121,19 +125,14 @@ export const verifyRefreshToken = (refreshToken: string | undefined) => {
                     reject("fail");
                     return;
                 }
-                // if (!user.refreshToken || !user.refreshToken.includes(refreshToken)) {
-                //     user.refreshToken = [];
-                //     await user.save();
-                //     console.log(129)
-                //     reject("fail");
-                //     return;
-                // }
+
                 const tokens = user.refreshToken!.filter((token) => token !== refreshToken);
                 user.refreshToken = tokens;
 
                 resolve(user);
             } catch (err) {
                 reject("fail");
+                console.log(131)
                 return;
             }
         });
@@ -150,10 +149,23 @@ export const logout = async (req: Request, res: Response) => {
     }
 };
 
+export const getUserInfo = async (req: Request, res: Response) => {
+    try {
+        const user = await userModel.findById(req.body.userId);
+        res.status(200).send({ user })
+    } catch (error) {
+        res.status(400).send("fail");
+
+    }
+}
+
 export const refresh = async (req: Request, res: Response) => {
     try {
-        const user = await verifyRefreshToken(req.body.refreshToken);
+        const authorization = req.header("authorization");
+        const token = authorization && authorization.split(' ')[1];
+        const user = await verifyRefreshToken(token);
         if (!user) {
+            console.log(166)
             res.status(400).send("fail");
             return;
         }
@@ -184,7 +196,7 @@ type Payload = {
 };
 
 export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const authorization = req.header('authorization');
+    const authorization = req.header("authorization");
     const token = authorization && authorization.split(' ')[1];
 
     if (!token) {

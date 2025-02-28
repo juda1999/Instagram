@@ -1,5 +1,5 @@
 import e, { Router } from 'express';
-import { login, register, refresh, logout } from '../controllers/auth.controller';
+import { login, register, refresh, logout, getUserInfo } from '../controllers/auth.controller';
 
 export const authRouter = Router();
 /**
@@ -108,21 +108,11 @@ authRouter.post('/login', login);
 /**
  * @swagger
  * /auth/refresh:
- *   post:
+ *   get:
  *     summary: Refresh tokens
  *     description: Refresh access and refresh tokens using the provided refresh token
  *     tags:
  *       - Auth
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               refreshToken:
- *                 type: string
- *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *     responses:
  *       200:
  *         description: Tokens refreshed successfully
@@ -142,7 +132,7 @@ authRouter.post('/login', login);
  *       500:
  *         description: Server error
  */
-authRouter.post("/refresh", refresh);
+authRouter.get("/refresh", refresh);
 
 /**
  * @swagger
@@ -171,3 +161,5 @@ authRouter.post("/refresh", refresh);
  *         description: Server error
  */
 authRouter.post("/logout", logout);
+
+authRouter.post("/userInfo", getUserInfo)

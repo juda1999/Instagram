@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from 'react';
+import React, { Fragment, useContext, useEffect } from 'react';
 import { Route } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../App';
@@ -11,10 +11,12 @@ export const PrivateRouteComponent: React.FC<PrivateRouteProps> = ({ element }) 
   const { user } = useContext(AppContext);
   const navigate = useNavigate();
 
-  if (!user) {
-    navigate('/signIn');
-    return null;
-  }
+  useEffect(() => {
+    if (!user) {
+      navigate('/signIn');
+    }
+  },
+  [user])
 
   return <Fragment>{element}</Fragment>;
 };

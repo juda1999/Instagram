@@ -30,7 +30,7 @@ export const SignUp: React.FC = () => {
   };
 
   return (
-    <div className='container'>
+    <div className='sign-up-container'>
       <h2>Sign Up</h2>
       {error && <div className="error">{error}</div>}
       <form onSubmit={handleSubmit}>

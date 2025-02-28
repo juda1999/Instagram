@@ -1,5 +1,5 @@
 /* Container that holds the sign-in form */
-.container {
+.sign-in-container {
     display: flex;
     flex-direction: column;
     align-items: center;

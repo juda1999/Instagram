@@ -15,9 +15,10 @@ export const SignIn: React.FC = () => {
     const token = localStorage.getItem('accessToken');
           if(token) {
             try {
-              const response = await axios.post<{ user: User; accessToken: string}>('http://localhost:3001/auth/refresh', { token });
+              const response = await axios.get<{ user: User; accessToken: string}>('http://localhost:3001/auth/refresh', { headers: { "Authorization": token}});
                 if(response.data.user) {
                   localStorage.setItem("accessToken", response.data.accessToken)
+                  console.log("here", response)
                   setUser(response.data.user)
                   navigate("/")
               }
@@ -40,9 +41,11 @@ export const SignIn: React.FC = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:3001/auth/login', { email, password });
+      const response = await axios.post<{user: User; accessToken: string}>('http://localhost:3001/auth/login', { email, password });
 
       localStorage.setItem('accessToken', response.data.accessToken);
+      console.log(response.data.user)
+      setUser(response.data.user)
       navigate('/');
     } catch (err) {
       setError('Invalid credentials. Please try again.');
@@ -50,7 +53,7 @@ export const SignIn: React.FC = () => {
   };
 
   return (
-    <div className='container'>
+    <div className='sign-in-container'>
       <h2>Sign In</h2>
       {error && <div className="error">{error}</div>}
       <form onSubmit={handleSubmit}>

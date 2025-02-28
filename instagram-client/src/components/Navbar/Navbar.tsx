@@ -1,27 +1,22 @@
-import * as React from 'react';
+import React, {useContext} from 'react';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import {IconButton} from '@mui/material';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import { Stack} from '@mui/material';
+import { AppContext } from '../../App';
 import { useNavigate } from 'react-router-dom';
 
 export const Navbar: React.FC = () => {
-  const navigate = useNavigate()
-
+  const { navbarItems } = useContext(AppContext);
   return (
       <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h6">
-            Instagram
-          </Typography>
-          <IconButton
-            onClick={() =>  navigate("/userProfile")}
-            size="large"
-            color="inherit">
-            <AccountCircle />
-            </IconButton>
+        <Toolbar sx={{ justifyContent: "space-between"}}>
+          <Stack direction="row" spacing={1}>
+            <Typography variant="h6">
+              Instagram
+            </Typography>
+          </Stack>
+          {navbarItems}
         </Toolbar>
-      </AppBar>
-  );
+      </AppBar>);
 }

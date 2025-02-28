@@ -164,9 +164,9 @@ export const postsRouter = Router();
  *           description: No posts found for the given user
  */
 
-postsRouter.get('/', authMiddleware, postsController.getAllItems.bind(postsController));
+postsRouter.post('/', authMiddleware, postsController.getPagedPosts.bind(postsController));
 postsRouter.post('/', authMiddleware, postsController.addItem.bind(postsController));
 postsRouter.get('/:id', authMiddleware, postsController.getItemById.bind(postsController));
-postsRouter.get('/uploader', authMiddleware, postsController.getAllItems.bind(postsController));
+postsRouter.post('/uploader', authMiddleware, postsController.getPagedPosts.bind(postsController));
 postsRouter.put('/:id', authMiddleware, postsController.updateItem.bind(postsController));
 postsRouter.delete('/:id',authMiddleware, postsController.deleteItem.bind(postsController));

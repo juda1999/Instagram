@@ -1,14 +1,16 @@
-// src/pages/SignUp.tsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import "./SignUp.css";
+import { User } from '../../App';
 
-const SignUp: React.FC = () => {
+export const SignUp: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate  ();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,22 +21,20 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      // Make the API request to register the user
-      const response = await axios.post('/api/register', { username, email, password });
-
-      // If successful, redirect to the Sign In page
-      navigate('/signin');
+      const response = await axios.post<{ user: User; accessToken: string}>('http://localhost:3001/auth/register', { username, email, password , firstName});
+      localStorage.setItem('accessToken', response.data.accessToken);
+      navigate('/home');
     } catch (err) {
       setError('Failed to sign up. Please try again.');
     }
   };
 
   return (
-    <div>
+    <div className='sign-up-container'>
       <h2>Sign Up</h2>
       {error && <div className="error">{error}</div>}
       <form onSubmit={handleSubmit}>
-        <div>
+        <div className='username'>
           <label>Username:</label>
           <input
             type="text"
@@ -43,7 +43,7 @@ const SignUp: React.FC = () => {
             required
           />
         </div>
-        <div>
+        <div className='email'>
           <label>Email:</label>
           <input
             type="email"
@@ -52,7 +52,16 @@ const SignUp: React.FC = () => {
             required
           />
         </div>
-        <div>
+        <div className='firstname'>
+          <label>FirstName:</label>
+          <input
+            type="text"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+        </div>
+        <div className='password'>
           <label>Password:</label>
           <input
             type="password"
@@ -61,10 +70,9 @@ const SignUp: React.FC = () => {
             required
           />
         </div>
-        <button type="submit">Sign Up</button>
+        <button className='sign-up' type="submit">Register</button>
       </form>
+      <button className='sign-in' onClick={() => navigate("/signIn")}>Already registered</button>
     </div>
   );
 };
-
-export default SignUp;

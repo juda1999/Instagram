@@ -32,8 +32,8 @@ export const PostList: React.FC<PostListProps> = ({ userId }) => {
 
   useEffect(
     () => {
-        setItems(items => [...items, ...data])
-        setHasMore(data.length === limit)
+        setItems(items => [...items, ...(data ?? [])])
+        setHasMore(data?.length === limit)
     },[data])
 
     //remove at end

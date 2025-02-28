@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios, { AxiosRequestConfig } from 'axios';
 
-export const useRequest = (url: string, options: AxiosRequestConfig, auth = true): { data: any; loading: boolean; error?: string } => {
-  const [data, setData] = useState([]);
+export const useRequest = <T = any>(url: string, options: AxiosRequestConfig, auth = true): { data: T; loading: boolean; error?: string } => {
+  const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 

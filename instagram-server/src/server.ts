@@ -8,6 +8,7 @@ import { authRouter } from "./routes/auth.router";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import cors from "cors"
+import path from "path";
 
 export const app = express();
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({extended: true, limit:'1mb'}));
 app.use(bodyParser.json());
 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/post', postsRouter);
 app.use('/comment', commentsRouter);
 app.use('/auth', authRouter);

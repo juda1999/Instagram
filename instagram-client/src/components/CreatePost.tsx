@@ -2,10 +2,10 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../App';
-import { Button, TextField } from '@mui/material';
+import { Button, Stack, TextField } from '@mui/material';
 
 const CreatePost = () => {
-  const {setNavbarItems} = useContext(AppContext)
+  const {setNavbarItems, user} = useContext(AppContext)
   const [title, setTitle] = useState('');
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -13,7 +13,6 @@ const CreatePost = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate()
-
 
   useEffect(
     () => {
@@ -45,8 +44,8 @@ const CreatePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title || !content || !image) {
-      setError('All fields are required!');
+    if (!title) {
+      setError('Title Required');
       return;
     }
 
@@ -55,11 +54,15 @@ const CreatePost = () => {
     formData.append('title', title);
     formData.append('image', image);
     formData.append('content', content);
+    formData.append('uploadedBy', user._id)
 
     try {
-      const response = await axios('/api/posts', {
+      const response = await axios('http://localhost:3001/post/create', {
         method: 'POST',
         data: formData,
+        headers: {
+          "Authorization": localStorage.getItem("accessToken")
+        }
       });
 
       if (!response.status) {
@@ -68,7 +71,7 @@ const CreatePost = () => {
 
       navigate("/")
     } catch (error) {
-      setError(error.message);
+      setError("Failed to create post");
     } finally {
       setLoading(false);
     }
@@ -79,7 +82,7 @@ const CreatePost = () => {
       <h1>Create a New Post</h1>
       {error && <div className="error">{error}</div>}
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <div className="form-group">
+        <Stack direction="column" className="form-group">
           <label htmlFor="title">Title</label>
           <input
             type="text"
@@ -89,36 +92,37 @@ const CreatePost = () => {
             placeholder="Enter post title"
             required
           />
-        </div>
+        </Stack>
 
-        <div className="form-group">
+        <Stack direction="column" className="form-group">
           <label htmlFor="image">Image</label>
           <input
             type="file"
             id="image"
             accept="image/*"
-            onChange={handleImageChange}
-            required
-          />
+            onChange={handleImageChange}/>
           {imagePreview && (
             <div className="image-preview">
               <img src={imagePreview} alt="Preview" />
             </div>
           )}
-        </div>
+        </Stack>
 
-        <div className="form-group">
+        <Stack direction="column" className="form-group">
           <label htmlFor="content">Content</label>
           <TextField
+            sx={{
+              width: "50%"
+            }}
             id="content"
             value={content}
             onChange={handleContentChange}
             rows={3}/>
-        </div>
+        </Stack>
 
-        <button type="submit" disabled={loading}>
+        <Button variant='contained' type="submit" disabled={loading}>
           {loading ? 'Creating...' : 'Create Post'}
-        </button>
+        </Button>
       </form>
     </div>
   );

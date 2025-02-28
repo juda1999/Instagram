@@ -1,10 +1,10 @@
-import _, { method } from "lodash"
 import { Post as PostInterface } from "../../App"
 import { Post } from "../Post/Post";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useEffect, useMemo, useState } from "react";
 import { AxiosRequestConfig } from "axios";
 import { useRequest } from "../../hooks/useRequest";
+import "./PostList.css"
 
 type PostListProps = {
     userId?: string;
@@ -24,7 +24,7 @@ export const PostList: React.FC<PostListProps> = ({ userId }) => {
       }),
     [skip, limit])
 
-  const {data} = useRequest(userId ? `post?uploader={${userId}}` : "post", options)
+  const {data} = useRequest(userId ? `post?uploader=${userId}` : "post", options)
 
   const fetchItems = async () => {
     setSkip(prev => prev + limit)
@@ -44,6 +44,7 @@ export const PostList: React.FC<PostListProps> = ({ userId }) => {
 
   return (
     <InfiniteScroll
+        className="post-list"
         dataLength={items.length}
         next={fetchItems}
         hasMore={hasMore}

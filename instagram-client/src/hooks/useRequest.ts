@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios, { AxiosRequestConfig } from 'axios';
 
-export const useRequest = <T = any>(url: string, options: AxiosRequestConfig, auth = true): { data: T; loading: boolean; error?: string } => {
+export const useRequest = <T = any>(url: string, options: AxiosRequestConfig, auth = true): { data: T; loading: boolean; error?: string; refetch: () => void } => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [refresh, setRefresh] = useState({})
+
+  const refetch = () => setRefresh({})
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,7 +35,7 @@ export const useRequest = <T = any>(url: string, options: AxiosRequestConfig, au
 
     fetchData();
 
-  }, [url, options]);
+  }, [url, options, refresh]);
 
-  return { data, loading, error };
+  return { data, loading, error, refetch };
 };

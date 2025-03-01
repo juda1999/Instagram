@@ -204,6 +204,6 @@ commentsRouter.post('/', authMiddleware, commentsController.addItem.bind(comment
 commentsRouter.put('/update/:id', authMiddleware, commentsController.updateItem.bind(commentsController));
 commentsRouter.get('/:id', authMiddleware, commentsController.getItemById.bind(commentsController));
 commentsRouter.get('/', authMiddleware, commentsController.getAllItems.bind(commentsController));
-commentsRouter.get('/postId', authMiddleware, commentsController.getAllItems.bind(commentsController));
+commentsRouter.get('/postId/:postId', authMiddleware, commentsController.getItemsByPostId.bind(commentsController));
 commentsRouter.delete('/delete/:id', authMiddleware, commentsController.deleteItem.bind(commentsController));
 commentsRouter.get('/uploader', authMiddleware, commentsController.getAllItems.bind(commentsController));

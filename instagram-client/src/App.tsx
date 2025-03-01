@@ -44,9 +44,17 @@ export interface User {
 }
 
 export interface Post {
-  photo: string,
-  title: String,
-  uploadedBy: string,
-  description: string,
-  uploadedAt: Date,
+  _id: string;
+  photo: string;
+  title: String;
+  uploadedBy: string;
+  description: string;
+  uploadedAt: Date;
+}
+
+export interface Comment {
+  message: string;
+  post: string;
+  uploadedBy: string;
+  uploadedAt: Date;
 }

@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/icons-material": "^6.4.5",
+    "@mui/icons-material": "^6.4.6",
     "@mui/material": "^6.4.5",
     "@mui/styled-engine-sc": "^6.4.3",
     "@testing-library/dom": "^10.4.0",
@@ -54,6 +54,10 @@
     ]
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.15"
+    "@types/lodash": "^4.17.15",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.0.2",
+    "eslint-plugin-prettier": "^5.2.3",
+    "prettier": "^3.5.2"
   }
 }

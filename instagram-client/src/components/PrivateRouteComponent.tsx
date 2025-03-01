@@ -7,16 +7,19 @@ interface PrivateRouteProps {
   element: React.ReactNode;
 }
 
-export const PrivateRouteComponent: React.FC<PrivateRouteProps> = ({ element }) => {
+export const PrivateRouteComponent: React.FC<PrivateRouteProps> = ({
+   element
+  }) => {
   const { user } = useContext(AppContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) {
+      console.log(user,"private")
       navigate('/signIn');
     }
   },
-  [user])
+    [user])
 
   return <Fragment>{element}</Fragment>;
 };

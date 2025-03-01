@@ -13,10 +13,10 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
   const {user, setUser} = useContext(AppContext)
   const [currentUser, setCurrentUser] = useState<User>();
 
-  const {data} = useRequest(`auth/userInfo?user=${userId}`, { method: "get" })
+  const {data} = useRequest(`user/userInfo/${userId}`, { method: "get" })
 
   useEffect(
-    () => setUser(data?.user),
+    () => setCurrentUser(data?.user),
     [data]);
 
   const editMode =

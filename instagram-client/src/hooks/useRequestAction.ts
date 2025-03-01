@@ -13,21 +13,18 @@ export const useRequestAction = <T = any>(
     setLoading(true);
     setError(null);
     try {
-      return await axios(
-        `http://localhost:3001/${url}`,
-        {
-          ...options,
-          headers: {
-            ...options.headers,
-            ...(auth
-              ? {
-                  Authorization: localStorage.getItem('accessToken'),
-                }
-              : {}),
-          },
-          data,
-        }
-      );
+      return await axios(`http://localhost:3001/${url}`, {
+        ...options,
+        headers: {
+          ...options.headers,
+          ...(auth
+            ? {
+                Authorization: localStorage.getItem('accessToken'),
+              }
+            : {}),
+        },
+        data,
+      });
     } catch (err) {
       setError(err.message || 'Something went wrong');
     } finally {

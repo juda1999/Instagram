@@ -2,7 +2,20 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../App';
-import { Button, Stack, TextField, CircularProgress, Snackbar, Alert, Box, Typography, FormLabel, CardMedia, AvatarGroup, Avatar } from '@mui/material';
+import {
+  Button,
+  Stack,
+  TextField,
+  CircularProgress,
+  Snackbar,
+  Alert,
+  Box,
+  Typography,
+  FormLabel,
+  CardMedia,
+  AvatarGroup,
+  Avatar,
+} from '@mui/material';
 
 export const CreatePost = () => {
   const { setNavbarItems, user } = useContext(AppContext);
@@ -22,7 +35,8 @@ export const CreatePost = () => {
           backgroundColor: 'aliceblue',
           height: '50%',
         }}
-        onClick={() => navigate('/')}>
+        onClick={() => navigate('/')}
+      >
         Posts
       </Button>
     );
@@ -59,12 +73,16 @@ export const CreatePost = () => {
     formData.append('uploadedBy', user._id);
 
     try {
-      const response = await axios.post('http://localhost:3001/post/create', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': localStorage.getItem('accessToken'),
-        },
-      });
+      const response = await axios.post(
+        'http://localhost:3001/post/create',
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: localStorage.getItem('accessToken'),
+          },
+        }
+      );
 
       if (response.status === 200) {
         setSuccess(true);
@@ -85,14 +103,22 @@ export const CreatePost = () => {
         Create a New Post
       </Typography>
       {error && (
-        <Snackbar open={true} autoHideDuration={6000} onClose={() => setError(null)}>
+        <Snackbar
+          open={true}
+          autoHideDuration={6000}
+          onClose={() => setError(null)}
+        >
           <Alert onClose={() => setError(null)} severity="error">
             {error}
           </Alert>
         </Snackbar>
       )}
       {success && (
-        <Snackbar open={true} autoHideDuration={6000} onClose={() => setSuccess(false)}>
+        <Snackbar
+          open={true}
+          autoHideDuration={6000}
+          onClose={() => setSuccess(false)}
+        >
           <Alert onClose={() => setSuccess(false)} severity="success">
             Post created successfully!
           </Alert>
@@ -117,7 +143,8 @@ export const CreatePost = () => {
                 variant="outlined"
                 component="span"
                 fullWidth
-                sx={{ textAlign: 'left' }}>
+                sx={{ textAlign: 'left' }}
+              >
                 Choose Image
               </Button>
             </label>
@@ -139,7 +166,8 @@ export const CreatePost = () => {
                   width: '100%',
                   maxHeight: 200,
                   objectFit: 'cover',
-                }}/>
+                }}
+              />
             </Box>
           )}
 
@@ -154,7 +182,12 @@ export const CreatePost = () => {
             rows={4}
           />
 
-          <Button variant="contained" type="submit" fullWidth disabled={loading}>
+          <Button
+            variant="contained"
+            type="submit"
+            fullWidth
+            disabled={loading}
+          >
             {loading ? <CircularProgress size={24} /> : 'Create Post'}
           </Button>
         </Stack>

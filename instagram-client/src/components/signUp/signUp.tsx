@@ -1,21 +1,43 @@
-import React, { useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { User } from '../../App';
-import { Button, TextField, Typography, Box, Grid2, Avatar, CircularProgress } from '@mui/material';
+import { AppContext, User } from '../../App';
+import {
+  Button,
+  TextField,
+  Typography,
+  Box,
+  Grid2,
+  Avatar,
+  CircularProgress,
+} from '@mui/material';
 import { PhotoCamera } from '@mui/icons-material';
+import { useRequestAction } from '../../hooks';
 
 export const SignUp: React.FC = () => {
+  const { setUser } = useContext(AppContext);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const options = useMemo(
+    () => ({
+      method: 'post',
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+    []
+  );
+  const { action: signUp } = useRequestAction('auth/register', options, false);
+
+  const handleProfilePictureChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (e.target.files && e.target.files[0]) {
       setProfilePicture(e.target.files[0]);
     }
@@ -34,6 +56,7 @@ export const SignUp: React.FC = () => {
     formData.append('email', email);
     formData.append('password', password);
     formData.append('firstName', firstName);
+    formData.append('lastName', lastName);
 
     if (profilePicture) {
       formData.append('profilePicture', profilePicture);
@@ -41,11 +64,8 @@ export const SignUp: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post<{ user: User; accessToken: string }>(
-        'http://localhost:3001/auth/register',
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
+      const response = await signUp(formData);
+      setUser(response.data.user);
       localStorage.setItem('accessToken', response.data.accessToken);
       navigate('/');
     } catch (err) {
@@ -56,10 +76,28 @@ export const SignUp: React.FC = () => {
   };
 
   return (
-    <Box className="sign-up-container" display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100vh" bgcolor="#f0f4f8">
-      <Typography variant="h4" gutterBottom>Sign Up</Typography>
-      {error && <Typography color="error" variant="body2" sx={{ marginBottom: 2 }}>{error}</Typography>}
-      <form onSubmit={handleSubmit} encType="multipart/form-data" style={{ width: '100%', maxWidth: 400 }}>
+    <Box
+      className="sign-up-container"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      height="100vh"
+      bgcolor="#f0f4f8"
+    >
+      <Typography variant="h4" gutterBottom>
+        Sign Up
+      </Typography>
+      {error && (
+        <Typography color="error" variant="body2" sx={{ marginBottom: 2 }}>
+          {error}
+        </Typography>
+      )}
+      <form
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+        style={{ width: '100%', maxWidth: 400 }}
+      >
         <Grid2 container spacing={2}>
           <Grid2 size={12}>
             <TextField
@@ -91,6 +129,15 @@ export const SignUp: React.FC = () => {
           </Grid2>
           <Grid2 size={12}>
             <TextField
+              label="Last Name"
+              fullWidth
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </Grid2>
+          <Grid2 size={12}>
+            <TextField
               label="Password"
               type="password"
               fullWidth
@@ -100,7 +147,12 @@ export const SignUp: React.FC = () => {
             />
           </Grid2>
           <Grid2 size={12}>
-            <Button variant="contained" component="label" fullWidth startIcon={<PhotoCamera />}>
+            <Button
+              variant="contained"
+              component="label"
+              fullWidth
+              startIcon={<PhotoCamera />}
+            >
               Upload Profile Picture
               <input
                 type="file"
@@ -112,17 +164,35 @@ export const SignUp: React.FC = () => {
           </Grid2>
           {profilePicture && (
             <Grid2 size={12} display="flex" justifyContent="center">
-              <Avatar src={URL.createObjectURL(profilePicture)} sx={{ width: 100, height: 100, marginTop: 2 }} />
+              <Avatar
+                src={URL.createObjectURL(profilePicture)}
+                sx={{ width: 100, height: 100, marginTop: 2 }}
+              />
             </Grid2>
           )}
           <Grid2 size={12}>
-            <Button variant="contained" color="primary" type="submit" fullWidth disabled={loading}>
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Register'}
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              fullWidth
+              disabled={loading}
+            >
+              {loading ? (
+                <CircularProgress
+size={24} color="inherit" />
+              ) : (
+                'Register'
+              )}
             </Button>
           </Grid2>
         </Grid2>
       </form>
-      <Button onClick={() => navigate('/signIn')} color="primary" sx={{ marginTop: 2 }}>
+      <Button
+        onClick={() => navigate('/signIn')}
+        color="primary"
+        sx={{ marginTop: 2 }}
+      >
         Already registered? Sign In
       </Button>
     </Box>

@@ -6,7 +6,7 @@ import { SignUp } from './components/SignUp';
 import { Home } from './components/Home';
 import { PrivateRouteComponent } from './components/PrivateRouteComponent';
 import { Navbar } from './components/Navbar/Navbar';
-import CreatePost from './components/CreatePost';
+import CreatePost from './components/CreatePost/CreatePost';
 
 interface AppContextProps {
   user?: User;

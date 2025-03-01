@@ -1,8 +1,8 @@
 import { Box, Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from "@mui/material"
 import { useContext, useMemo, useState } from "react"
 import { Fragment } from "react/jsx-runtime"
-import { AppContext, Comment } from "../App";
-import { useRequestAction } from "../hooks/useRequestAction";
+import { AppContext, Comment } from "../../App";
+import { useRequestAction } from "../../hooks/useRequestAction";
 import { AxiosRequestConfig } from "axios";
 
 type CommentsDialogProps = {

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
 export interface User {
     _id?: string;
@@ -8,6 +8,7 @@ export interface User {
     lastName?: string;
     email: string;
     refreshToken?: string[];
+    likedPosts: string[];
 }
 
 const userSchema = new mongoose.Schema<User>({
@@ -31,6 +32,11 @@ const userSchema = new mongoose.Schema<User>({
     password: {
       type: String,
       required: true,
+    },
+    likedPosts: {
+      type: [Types.ObjectId],
+      ref: "Post",
+      required: false
     },
     refreshToken: {
       type: [String],

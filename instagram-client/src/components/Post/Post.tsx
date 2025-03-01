@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { Comment, Post as PostInterface, User } from '../../App';
 import { useRequest } from '../../hooks/useRequest';
-import { CommentsDialog } from '../CommentDialog';
+import { CommentsDialog } from '../CommentDialog/CommentDialog';
 
 interface PostProps {
   post: PostInterface;

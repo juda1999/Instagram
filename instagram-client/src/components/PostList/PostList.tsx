@@ -1,5 +1,5 @@
 import { Post as PostInterface } from "../../App"
-import { Post } from "../Post/Post";
+import { Post } from "../Post";
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { useEffect, useMemo, useState } from "react";
 import { AxiosRequestConfig } from "axios";

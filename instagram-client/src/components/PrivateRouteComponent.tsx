@@ -15,7 +15,6 @@ export const PrivateRouteComponent: React.FC<PrivateRouteProps> = ({
 
   useEffect(() => {
     if (!user) {
-      console.log(user,"private")
       navigate('/signIn');
     }
   },

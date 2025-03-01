@@ -5,7 +5,7 @@ export const useRequestAction = <T = any>(
   url: string,
   options: AxiosRequestConfig,
   auth = true
-): { action: (data: T) => any; loading: boolean; error?: string } => {
+): { action: (data: T) => Promise<any>; loading: boolean; error?: string } => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -13,7 +13,7 @@ export const useRequestAction = <T = any>(
     setLoading(true);
     setError(null);
     try {
-      await axios(
+      return await axios(
         `http://localhost:3001/${url}`,
         {
           ...options,

@@ -6,6 +6,7 @@ export interface User {
     username?: string;
     firstName: string;
     lastName?: string;
+    profilePicture?: string;
     email: string;
     refreshToken?: string[];
     likedPosts?: string[];
@@ -24,6 +25,10 @@ const userSchema = new mongoose.Schema<User>({
         type: String,
         required: false
     },
+    profilePicture: {
+      type: String,
+      required: false
+  },
     email: {
       type: String,
       required: true,

@@ -19,13 +19,16 @@ import { CommentsDialog } from '../CommentDialog/CommentDialog';
 import { useRequestAction } from '../../hooks';
 import { data } from 'react-router-dom';
 import _ from 'lodash';
+import { ProfilePic } from '../ProfilePic';
+import { HomeContext } from '../Home';
 
 interface PostProps {
   post: PostInterface;
 }
 
 export const Post: React.FC<PostProps> = ({ post }) => {
-  const { user, setUser } = useContext(AppContext)
+  const { user, setUser } = useContext(AppContext);
+  const { setUserDetailsId } = useContext(HomeContext)
   const options = useMemo(() => ({ method: 'get' }), []);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
 
@@ -36,7 +39,7 @@ export const Post: React.FC<PostProps> = ({ post }) => {
     `comment/postId/${post._id}`,
     options
   );
-  const { data: userData } = useRequest<{ user: User }>(
+  const { data: postUserData } = useRequest<User>(
     `user/userInfo/${post.uploadedBy}`,
     options
   );
@@ -66,19 +69,18 @@ export const Post: React.FC<PostProps> = ({ post }) => {
         borderRadius: 2,
         overflow: 'hidden',
         margin: 2,
-      }}
-    >
+      }}>
       <Box sx={{ display: 'flex', alignItems: 'center', padding: 2 }}>
-        <Avatar sx={{ width: 32, height: 32, marginRight: 1 }} />
+        <ProfilePic path={postUserData?.profilePicture} onClick={() => setUserDetailsId(postUserData?._id)}/>
         <Typography variant="body2" color="text.secondary">
-          {userData?.user?._id}
+          {postUserData?.username}
         </Typography>
       </Box>
 
       <CardMedia
         component="img"
         height="200"
-        image={post.photo}
+        image={`http://localhost:3001${post.photo}`}
         alt="Post Image"
         sx={{ objectFit: 'cover' }}
       />

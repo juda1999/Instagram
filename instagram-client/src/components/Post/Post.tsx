@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import {
   Card,
   CardContent,
@@ -8,27 +8,55 @@ import {
   Avatar,
   Dialog,
   Button,
+  Stack,
+  Badge,
+  IconButton,
 } from '@mui/material';
-import { Comment, Post as PostInterface, User } from '../../App';
+import { Favorite, FavoriteBorder } from "@mui/icons-material";
+import { AppContext, Comment, Post as PostInterface, User } from '../../App';
 import { useRequest } from '../../hooks/useRequest';
-import { CommentsDialog } from '../CommentDialog';
+import { CommentsDialog } from '../CommentDialog/CommentDialog';
+import { useRequestAction } from '../../hooks';
+import { data } from 'react-router-dom';
+import _ from 'lodash';
 
 interface PostProps {
   post: PostInterface;
 }
 
 export const Post: React.FC<PostProps> = ({ post }) => {
+  const { user, setUser } = useContext(AppContext)
   const options = useMemo(() => ({ method: 'get' }), []);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
+
+  const updateUserOptions = useMemo(() => ({ method: 'post' }), []);
+  const { action, error } = useRequestAction(`user/update/${user._id}`, updateUserOptions)
 
   const { data: comments, refetch } = useRequest<Comment[]>(
     `comment/postId/${post._id}`,
     options
   );
   const { data: userData } = useRequest<{ user: User }>(
-    `auth/userInfo?user=${post.uploadedBy}`,
+    `user/userInfo/${post.uploadedBy}`,
     options
   );
+
+  function handleLiked() {
+    const likedPosts: string[] =
+      user.likedPosts.includes(post._id)
+        ? _.remove(user.likedPosts, post._id)
+        : [...user.likedPosts, post._id];
+
+    action({ likedPosts })
+    if (!error) {
+      setUser({
+        ...user,
+        likedPosts
+      })
+    }
+
+  };
+
   return (
     <Card
       sx={{
@@ -72,21 +100,29 @@ export const Post: React.FC<PostProps> = ({ post }) => {
         </Typography>
 
         <Typography
-            variant="caption"
-            color="text.secondary">
+          variant="caption"
+          color="text.secondary">
           {new Date(post.uploadedAt).toLocaleDateString()}
         </Typography>
         <Typography variant="body2" sx={{ marginTop: 2 }}>
           {comments?.length ?? 0} Comments
         </Typography>
 
-        <Button
-          onClick={() => setCommentModalOpen(true)}
-          sx={{ mt: 1 }}
-          variant="outlined"
-        >
-          View Comments
-        </Button>
+        <Stack direction="row" justifyContent="space-between">
+          <Button
+            onClick={() => setCommentModalOpen(true)}
+            sx={{ mt: 1 }}
+            variant="outlined">
+            View Comments
+          </Button>
+          <IconButton onClick={handleLiked}>
+            {user.likedPosts.includes(post._id) ? (
+              <Favorite color="error" />
+            ) : (
+              <FavoriteBorder color="action" />
+            )}
+          </IconButton>
+        </Stack>
       </CardContent>
       <Dialog
         open={commentModalOpen}

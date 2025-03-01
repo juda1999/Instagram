@@ -6,7 +6,7 @@ import { SignUp } from './components/SignUp';
 import { Home } from './components/Home';
 import { PrivateRouteComponent } from './components/PrivateRouteComponent';
 import { Navbar } from './components/Navbar/Navbar';
-import CreatePost from './components/CreatePost';
+import CreatePost from './components/CreatePost/CreatePost';
 
 interface AppContextProps {
   user?: User;
@@ -22,7 +22,10 @@ export function App() {
   const [navbarItems, setNavbarItems] = useState<ReactNode>([])
 
   return (
-    <AppContext.Provider value={{user, setUser ,navbarItems, setNavbarItems}}>
+    <AppContext.Provider value={{user, setUser: (user) => {
+      console.log(user)
+      setUser(user)
+    } ,navbarItems, setNavbarItems}}>
     <BrowserRouter>
     <Navbar/>
     <Routes>
@@ -41,12 +44,13 @@ export interface User {
   username: string;
   email: string;
   profilePic: string | null;
+  likedPosts: string[];
 }
 
 export interface Post {
   _id: string;
   photo: string;
-  title: String;
+  title: string;
   uploadedBy: string;
   description: string;
   uploadedAt: Date;

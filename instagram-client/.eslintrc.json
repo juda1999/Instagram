@@ -20,13 +20,13 @@
     },
     "plugins": ["@typescript-eslint", "prettier", "react"],
     "rules": {
-      "prettier/prettier": ["error", {
+      "prettier/prettier": ["warn", {
         "singleQuote": true,
         "trailingComma": "es5",
         "semi": true,
         "tabWidth": 2
       }],
-      "react/jsx-first-prop-new-line": ["error", "always"],
+      "react/jsx-first-prop-new-line": ["warn", "always"],
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "no-console": "warn"
     }

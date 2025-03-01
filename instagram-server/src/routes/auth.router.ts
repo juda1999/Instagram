@@ -1,5 +1,5 @@
-import e, { Router } from 'express';
-import { login, register, refresh, logout, getUserInfo } from '../controllers/auth.controller';
+import { Router } from 'express';
+import { login, register, refresh, logout } from '../controllers/auth.controller';
 
 export const authRouter = Router();
 /**
@@ -161,5 +161,3 @@ authRouter.get("/refresh", refresh);
  *         description: Server error
  */
 authRouter.post("/logout", logout);
-
-authRouter.get("/userInfo", getUserInfo)

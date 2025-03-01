@@ -18,10 +18,12 @@ export const SignIn: React.FC = () => {
               const response = await axios.get<{ user: User; accessToken: string}>('http://localhost:3001/auth/refresh', { headers: { "Authorization": token}});
                 if(response.data.user) {
                   localStorage.setItem("accessToken", response.data.accessToken)
+                  console.log(response.data)
                   setUser(response.data.user)
                   navigate("/")
               }
             } catch (error) {
+              console.error(error)
             }
           }
   }

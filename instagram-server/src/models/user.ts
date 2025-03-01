@@ -2,13 +2,13 @@ import mongoose, { Types } from "mongoose";
 
 export interface User {
     _id?: string;
-    password: string;
-    username: string;
+    password?: string;
+    username?: string;
     firstName: string;
     lastName?: string;
     email: string;
     refreshToken?: string[];
-    likedPosts: string[];
+    likedPosts?: string[];
 }
 
 const userSchema = new mongoose.Schema<User>({
@@ -30,13 +30,13 @@ const userSchema = new mongoose.Schema<User>({
       unique: true,
     },
     password: {
-      type: String,
-      required: true,
+      type: String
     },
     likedPosts: {
       type: [Types.ObjectId],
       ref: "Post",
-      required: false
+      required: false,
+      default: [],
     },
     refreshToken: {
       type: [String],

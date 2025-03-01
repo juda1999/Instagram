@@ -1,12 +1,7 @@
 import React, { createContext, ReactNode, useState } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { SignIn } from './components/SignIn';
-import { SignUp } from './components/SignUp';
-import { Home } from './components/Home';
-import { PrivateRouteComponent } from './components/PrivateRouteComponent';
-import { Navbar } from './components/Navbar/Navbar';
-import CreatePost from './components/CreatePost/CreatePost';
+import { SignIn, SignUp, Home, PrivateRouteComponent, Navbar, CreatePost } from './components';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Box } from '@mui/material';
 
@@ -50,6 +45,8 @@ export function App() {
 export interface User {
   _id: string;
   username: string;
+  firstName: string;
+  lastName: string;
   email: string;
   profilePicture: string | null;
   likedPosts: string[];

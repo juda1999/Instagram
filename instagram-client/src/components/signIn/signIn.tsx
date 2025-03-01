@@ -5,7 +5,14 @@ import './SignIn.css';
 import { AppContext, User } from '../../App';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { useRequestAction } from '../../hooks';
-import { Button, TextField, Typography, Box, Grid, CircularProgress, Grid2 } from '@mui/material';
+import {
+  Button,
+  TextField,
+  Typography,
+  Box,
+  CircularProgress,
+  Grid2,
+} from '@mui/material';
 
 export const SignIn: React.FC = () => {
   const { setUser } = useContext(AppContext);
@@ -15,14 +22,20 @@ export const SignIn: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const options = useMemo(() => ({ method: "post" }), []);
-  const { action: googleLoginRequest } = useRequestAction("auth/googleLogin", options);
+  const options = useMemo(() => ({ method: 'post' }), []);
+  const { action: googleLoginRequest } = useRequestAction(
+    'auth/googleLogin',
+    options
+  );
 
   async function handleOnLoad() {
     const token = localStorage.getItem('accessToken');
     if (token) {
       try {
-        const response = await axios.get<UserResponse>('http://localhost:3001/auth/refresh', { headers: { "Authorization": token } });
+        const response = await axios.get<UserResponse>(
+          'http://localhost:3001/auth/refresh',
+          { headers: { Authorization: token } }
+        );
         if (response.data.user) {
           handleSuccessLogin(response.data);
         }
@@ -33,9 +46,9 @@ export const SignIn: React.FC = () => {
   }
 
   function handleSuccessLogin(userResponse: UserResponse) {
-    localStorage.setItem("accessToken", userResponse.accessToken);
+    localStorage.setItem('accessToken', userResponse.accessToken);
     setUser(userResponse.user);
-    navigate("/");
+    navigate('/');
   }
 
   useEffect(() => {
@@ -51,7 +64,10 @@ export const SignIn: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post<{ user: User; accessToken: string }>('http://localhost:3001/auth/login', { email, password });
+      const response = await axios.post<{ user: User; accessToken: string }>(
+        'http://localhost:3001/auth/login',
+        { email, password }
+      );
       handleSuccessLogin(response.data);
     } catch (err) {
       setError('Invalid credentials. Please try again.');
@@ -75,10 +91,25 @@ export const SignIn: React.FC = () => {
   };
 
   return (
-    <Box className='sign-in-container' display="flex" flexDirection="column" alignItems="center" justifyContent="center" height="100vh" bgcolor="#f0f4f8">
-      <Typography variant="h4" gutterBottom>Sign In</Typography>
-      {error && <Typography color="error" variant="body2" sx={{ marginBottom: 2 }}>{error}</Typography>}
-      <form className='sign-in-form' onSubmit={handleSubmit}>
+    <Box
+      className="sign-in-container"
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      height="100vh"
+      bgcolor="#f0f4f8"
+    >
+      <Typography variant="h4" gutterBottom>
+        Sign In
+      </Typography>
+      {error && (
+        <Typography
+color="error" variant="body2" sx={{ marginBottom: 2 }}>
+          {error}
+        </Typography>
+      )}
+      <form className="sign-in-form" onSubmit={handleSubmit}>
         <Grid2 container spacing={2}>
           <Grid2 size={12}>
             <TextField
@@ -101,8 +132,19 @@ export const SignIn: React.FC = () => {
             />
           </Grid2>
           <Grid2 size={12}>
-            <Button variant="contained" color="primary" type="submit" fullWidth disabled={loading}>
-              {loading ? <CircularProgress size={24} color="inherit" /> : 'Sign In'}
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              fullWidth
+              disabled={loading}
+            >
+              {loading ? (
+                <CircularProgress
+size={24} color="inherit" />
+              ) : (
+                'Sign In'
+              )}
             </Button>
           </Grid2>
         </Grid2>
@@ -114,7 +156,11 @@ export const SignIn: React.FC = () => {
         size="large"
         theme="outline"
       />
-      <Button onClick={() => navigate('/signUp')} color="primary" sx={{ marginTop: 2 }}>
+      <Button
+        onClick={() => navigate('/signUp')}
+        color="primary"
+        sx={{ marginTop: 2 }}
+      >
         Register
       </Button>
     </Box>

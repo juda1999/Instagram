@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../App';
 import { Button, Stack, TextField, CircularProgress, Snackbar, Alert, Box, Typography, FormLabel, CardMedia, AvatarGroup, Avatar } from '@mui/material';
 
-const CreatePost = () => {
+export const CreatePost = () => {
   const { setNavbarItems, user } = useContext(AppContext);
   const [title, setTitle] = useState('');
   const [image, setImage] = useState(null);
@@ -162,5 +162,3 @@ const CreatePost = () => {
     </Box>
   );
 };
-
-export default CreatePost;

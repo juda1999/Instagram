@@ -4,7 +4,6 @@ import axios from 'axios';
 import { User } from '../../App';
 import { Button, TextField, Typography, Box, Grid2, Avatar, CircularProgress } from '@mui/material';
 import { PhotoCamera } from '@mui/icons-material';
-import './SignUp.css';
 
 export const SignUp: React.FC = () => {
   const [username, setUsername] = useState('');

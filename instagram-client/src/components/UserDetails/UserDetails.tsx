@@ -16,7 +16,7 @@ import {
   FormLabel,
 } from '@mui/material'; // Import Material UI components
 import { useRequestAction } from '../../hooks';
-import { Close, PhotoCamera } from '@mui/icons-material';
+import { Close, Edit, PhotoCamera } from '@mui/icons-material';
 import { HomeContext } from '../Home';
 
 interface UserDetailsProps {
@@ -70,19 +70,28 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
   };
 
   return (
-    <Card sx={{ backgroundColor: "#f0f4f8"}}>
+    <Card sx={{ maxHeight: "100%", overflow: "scroll", backgroundColor: "#f0f4f8" }}>
       <CardHeader
         title={<Typography variant="h6">User Details</Typography>}
         action={
-          <Button onClick={() => setUserDetailsId(undefined)} sx={{ minWidth: 0 }}>
+          <Button onClick={() => setUserDetailsId(undefined)}>
             <Close />
           </Button>
         } />
-      <Stack sx={{ justifyContent: "center", alignItems: "center" }}>
+
+      <Stack alignItems="center">
         <CardContent sx={{ width: "50%" }}>
-          <Box display="flex" flexDirection="column" alignItems="center">
+          <Stack sx={{ position: "relative" }} direction="row" justifyContent="center">
             <ProfilePic path={currentUser?.profilePicture} />
-          </Box>
+            {userId === user?._id &&
+              <Button
+                sx={{ right: 0, position: "absolute" }}
+                onClick={() => setEditMode(true)}
+                variant="text"
+                color="primary">
+                <Edit />
+              </Button>}
+          </Stack>
 
           {editMode ? (
             <>
@@ -128,9 +137,8 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
         </CardContent>
 
         <CardActions>
-          {userId === user?._id &&
-            editMode ? (
-            <Stack spacing="1" direction="row">
+          {editMode && (
+            <Stack spacing={1} direction="row">
               <Button onClick={handleSubmit} variant="contained" color="primary">
                 Save Changes
               </Button>
@@ -138,17 +146,10 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
                 cancel
               </Button>
             </Stack>
-          ) : (
-            <Button
-              onClick={() => setEditMode(true)}
-              variant="outlined"
-              color="primary">
-              Edit Details
-            </Button>
           )}
         </CardActions>
 
-        <CardContent>
+        <CardContent sx={{ overflow: "hidden", maxHeight: "100%" }}>
           <PostList userId={userId} />
         </CardContent>
       </Stack>

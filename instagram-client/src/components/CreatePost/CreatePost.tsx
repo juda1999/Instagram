@@ -117,8 +117,7 @@ const CreatePost = () => {
                 variant="outlined"
                 component="span"
                 fullWidth
-                sx={{ textAlign: 'left' }}
-              >
+                sx={{ textAlign: 'left' }}>
                 Choose Image
               </Button>
             </label>

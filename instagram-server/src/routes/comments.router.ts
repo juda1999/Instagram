@@ -148,7 +148,7 @@ export const commentsRouter = Router();
  *           description: Comment deleted successfully
  *         404:
  *           description: Comment not found
- *   /comment?uploader={uploaderId}:
+ *   /comment/uploader?uploader={uploaderId}:
  *     get:
  *       summary: Get comments by uploader
  *       tags: [Comment]
@@ -173,7 +173,7 @@ export const commentsRouter = Router();
  *                   $ref: '#/components/schemas/Comment'
  *         404:
  *           description: No comments found for the given uploader
- *   /comment?postId={postId}:
+ *   /comment/postId/{postId}:
  *     get:
  *       summary: Get comments by post
  *       tags: [Comment]
@@ -181,10 +181,10 @@ export const commentsRouter = Router();
  *         - bearerAuth: []
  *       description: Returns a list of comments uploaded on a specific post
  *       parameters:
- *         - in: query
- *           name: postId
+ *         - in: path
+ *           name: id
  *           required: true
- *           description: The ID of the post of the comments
+ *           description: The ID of the post to retrieve the comments
  *           schema:
  *             type: string
  *       responses:

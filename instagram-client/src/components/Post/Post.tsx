@@ -254,7 +254,6 @@ export const Post: React.FC<PostProps> = ({
       <Dialog
         open={commentModalOpen}
         onClose={() => setCommentModalOpen(false)}
-        maxWidth="lg"
       >
         <CommentsDialog
           onClose={() => {

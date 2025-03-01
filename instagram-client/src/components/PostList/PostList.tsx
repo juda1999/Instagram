@@ -38,7 +38,6 @@ export const PostList: React.FC<PostListProps> = ({ userId }) => {
     () => {
       setItems(items => _.uniqBy([...items, ...(data ?? [])], item => item._id))
       setHasMore(data?.length === limit)
-      console.log(items)
     }, [data])
 
   const filteredItems =

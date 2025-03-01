@@ -1,7 +1,14 @@
 import React, { createContext, ReactNode, useState } from 'react';
 import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { SignIn, SignUp, Home, PrivateRouteComponent, Navbar, CreatePost } from './components';
+import {
+  SignIn,
+  SignUp,
+  Home,
+  PrivateRouteComponent,
+  Navbar,
+  CreatePost,
+} from './components';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { Box } from '@mui/material';
 
@@ -15,31 +22,40 @@ interface AppContextProps {
 export const AppContext = createContext<AppContextProps>({});
 
 export function App() {
-  const [user, setUser] = useState<User>()
-  const [navbarItems, setNavbarItems] = useState<ReactNode>([])
+  const [user, setUser] = useState<User>();
+  const [navbarItems, setNavbarItems] = useState<ReactNode>([]);
 
   return (
     /// move secret
     <GoogleOAuthProvider clientId="552634801343-odnvmi18ds914j0hci9a6mhuqrbuvebk.apps.googleusercontent.com">
-      <AppContext.Provider value={{
-        user, setUser: (user) => {
-          console.log(user)
-          setUser(user)
-        }, navbarItems, setNavbarItems
-      }}>
+      <AppContext.Provider
+        value={{
+          user,
+          setUser,
+          navbarItems,
+          setNavbarItems,
+        }}
+      >
         <BrowserRouter>
-            <Navbar />
-            <Box sx={{ marginTop: "16px"}}>
+          <Navbar />
+          <Box sx={{ marginTop: '16px' }}>
             <Routes>
-              <Route path='/' element={<PrivateRouteComponent element={<Home />} />} />
-              <Route path='/add' element={<PrivateRouteComponent element={<CreatePost />} />} />
+              <Route
+                path="/"
+                element={<PrivateRouteComponent element={<Home />} />}
+              />
+              <Route
+                path="/add"
+                element={<PrivateRouteComponent element={<CreatePost />} />}
+              />
               <Route path="/signUp" element={<SignUp />} />
               <Route path="/signIn" element={<SignIn />} />
             </Routes>
-            </Box>
+          </Box>
         </BrowserRouter>
       </AppContext.Provider>
-    </GoogleOAuthProvider>);
+    </GoogleOAuthProvider>
+  );
 }
 
 export interface User {

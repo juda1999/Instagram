@@ -8,7 +8,6 @@ import { authRouter } from "./routes/auth.router";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import cors from "cors"
-import path from "path";
 import { userRouter } from "./routes/user.router";
 
 export const app = express();

@@ -56,7 +56,6 @@ export const register = async (req: Request, res: Response) => {
                 accessToken: tokens?.accessToken,
             });
         } catch (err) {
-            console.log(err)
             res.status(400).send({ message: 'Error registering user', error: err });
         }
     });
@@ -103,7 +102,7 @@ export const login = async (req: Request, res: Response) => {
             res.status(500).send('Server Error');
             return;
         }
-        // generate token
+
         const tokens = generateToken(user._id);
         if (!tokens) {
             res.status(500).send('Server Error');
@@ -134,20 +133,16 @@ type tUser = Document<unknown, {}, User> & User & Required<{
 export const verifyRefreshToken = (refreshToken: string | undefined) => {
     return new Promise<tUser>((resolve, reject) => {
         if (!refreshToken) {
-            console.log(103)
-
             reject("fail");
             return;
         }
         if (!process.env.TOKEN_SECRET) {
-            console.log(107)
             reject("fail");
             return;
         }
         jwt.verify(refreshToken, process.env.TOKEN_SECRET, async (err: any, payload: any) => {
             if (err) {
                 reject("fail");
-                console.log(113)
                 return
             }
 
@@ -165,7 +160,6 @@ export const verifyRefreshToken = (refreshToken: string | undefined) => {
                 resolve(user);
             } catch (err) {
                 reject("fail");
-                console.log(131)
                 return;
             }
         });
@@ -211,8 +205,7 @@ export const googleLogin = async (req: Request, res: Response) => {
             user: existingUser
         });
     } catch (error) {
-        console.log(error)
-        res.status(400).send("fail");
+        res.status(500).send("fail");
     }
 }
 
@@ -232,7 +225,6 @@ export const refresh = async (req: Request, res: Response) => {
         const token = authorization && authorization.split(' ')[1];
         const user = await verifyRefreshToken(token);
         if (!user) {
-            console.log(166)
             res.status(400).send("fail");
             return;
         }

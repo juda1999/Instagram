@@ -1,9 +1,19 @@
-import { Box, Button, DialogActions, DialogContent, DialogTitle, TextField, Typography } from "@mui/material"
-import React, { useContext, useMemo, useState } from "react"
-import { Fragment } from "react/jsx-runtime"
-import { AppContext, Comment } from "../../App";
-import { useRequestAction } from "../../hooks/useRequestAction";
-import { AxiosRequestConfig } from "axios";
+import {
+  Box,
+  Button,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import React, { useContext, useMemo, useState } from 'react';
+import { Fragment } from 'react/jsx-runtime';
+import { AppContext, Comment } from '../../App';
+import { useRequestAction } from '../../hooks/useRequestAction';
+import { AxiosRequestConfig } from 'axios';
+import { Close } from '@mui/icons-material';
 
 type CommentsDialogProps = {
   comments: Comment[];
@@ -11,31 +21,46 @@ type CommentsDialogProps = {
   onClose: () => void;
 };
 
-export const CommentsDialog: React.FC<CommentsDialogProps> = ({ onClose, comments, postId }) => {
+export const CommentsDialog: React.FC<CommentsDialogProps> = ({
+  onClose,
+  comments,
+  postId,
+}) => {
   const { user } = useContext(AppContext);
-  const [newComment, setNewComment] = useState("")
-  const options =
-    useMemo(
-      (): AxiosRequestConfig => ({
-        method: "Post",
-      }),
-      []);
+  const [newComment, setNewComment] = useState('');
+  const options = useMemo(
+    (): AxiosRequestConfig => ({
+      method: 'Post',
+    }),
+    []
+  );
 
-  const { action } = useRequestAction<Comment>("comment", options);
+  const { action } = useRequestAction<Comment>('comment', options);
   function handleAddComment() {
     action({
       message: newComment,
       uploadedBy: user._id,
       post: postId,
-      uploadedAt: new Date()
-    })
+      uploadedAt: new Date(),
+    });
 
     onClose();
   }
 
   return (
     <Fragment>
-      <DialogTitle>Comments</DialogTitle>
+      <DialogTitle component="div">
+        <Stack
+          alignItems="center"
+          direction="row"
+          justifyContent="space-between"
+        >
+          <Typography>Comments</Typography>
+          <Button sx={{ minWidth: 0, padding: 0 }} onClick={onClose}>
+            <Close />
+          </Button>
+        </Stack>
+      </DialogTitle>
       <DialogContent>
         <Box sx={{ maxHeight: 400, overflowY: 'auto', mb: 2 }}>
           {comments?.length > 0 ? (
@@ -64,12 +89,10 @@ export const CommentsDialog: React.FC<CommentsDialogProps> = ({ onClose, comment
         />
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="primary">
-          Close
-        </Button>
         <Button onClick={handleAddComment} color="primary" variant="contained">
           Add Comment
         </Button>
       </DialogActions>
-    </Fragment>)
-}
+    </Fragment>
+  );
+};

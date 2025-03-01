@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../App';
 import {
@@ -13,9 +13,9 @@ import {
   Typography,
   FormLabel,
   CardMedia,
-  AvatarGroup,
-  Avatar,
 } from '@mui/material';
+import { useRequestAction } from '../../hooks';
+import { method } from 'lodash';
 
 export const CreatePost = () => {
   const { setNavbarItems, user } = useContext(AppContext);
@@ -25,13 +25,25 @@ export const CreatePost = () => {
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
+
+  const summarizeRequestOptions = useMemo(
+    () => ({
+      method: 'post',
+    }),
+    []
+  );
+
+  const { action: summarizeRequest } = useRequestAction(
+    'post/summarize',
+    summarizeRequestOptions
+  );
 
   useEffect(() => {
     setNavbarItems(
       <Button
         sx={{
+          textTransform: 'none',
           backgroundColor: 'aliceblue',
           height: '50%',
         }}
@@ -42,9 +54,10 @@ export const CreatePost = () => {
     );
   }, []);
 
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
-  };
+  async function handleSummarize() {
+    const response = await summarizeRequest({ text: content });
+    console.log(response);
+  }
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -52,10 +65,6 @@ export const CreatePost = () => {
       setImage(file);
       setImagePreview(URL.createObjectURL(file));
     }
-  };
-
-  const handleContentChange = (e) => {
-    setContent(e.target.value);
   };
 
   const handleSubmit = async (e) => {
@@ -85,7 +94,6 @@ export const CreatePost = () => {
       );
 
       if (response.status === 200) {
-        setSuccess(true);
         navigate('/');
       } else {
         throw new Error('Failed to create post');
@@ -113,17 +121,6 @@ export const CreatePost = () => {
           </Alert>
         </Snackbar>
       )}
-      {success && (
-        <Snackbar
-          open={true}
-          autoHideDuration={6000}
-          onClose={() => setSuccess(false)}
-        >
-          <Alert onClose={() => setSuccess(false)} severity="success">
-            Post created successfully!
-          </Alert>
-        </Snackbar>
-      )}
       <form onSubmit={handleSubmit}>
         <Stack direction="column" spacing={2}>
           <FormLabel htmlFor="title">Title</FormLabel>
@@ -131,11 +128,10 @@ export const CreatePost = () => {
             id="title"
             variant="outlined"
             value={title}
-            onChange={handleTitleChange}
+            onChange={(e) => setTitle(e.target.value)}
             fullWidth
             required
           />
-
           <Stack direction="column" spacing={1}>
             <FormLabel htmlFor="image">Image</FormLabel>
             <label htmlFor="image">
@@ -143,7 +139,7 @@ export const CreatePost = () => {
                 variant="outlined"
                 component="span"
                 fullWidth
-                sx={{ textAlign: 'left' }}
+                sx={{ textTransform: 'none', textAlign: 'left' }}
               >
                 Choose Image
               </Button>
@@ -176,16 +172,23 @@ export const CreatePost = () => {
             id="content"
             variant="outlined"
             value={content}
-            onChange={handleContentChange}
+            onChange={(e) => setContent(e.target.value)}
             fullWidth
             multiline
             rows={4}
           />
+          <Button
+            sx={{ textTransform: 'none' }}
+            onClick={() => handleSummarize()}
+          >
+            Summarize Using Ai
+          </Button>
 
           <Button
             variant="contained"
             type="submit"
             fullWidth
+            sx={{ textTransform: 'none' }}
             disabled={loading}
           >
             {loading ? <CircularProgress size={24} /> : 'Create Post'}

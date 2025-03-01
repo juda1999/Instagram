@@ -1,8 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import {userModel, User } from '../models/user';
+import { userModel, User } from '../models/user';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
+import { OAuth2Client } from 'google-auth-library';
+const client = new OAuth2Client('552634801343-odnvmi18ds914j0hci9a6mhuqrbuvebk.apps.googleusercontent.com');
 
 export const register = async (req: Request, res: Response) => {
     try {
@@ -18,7 +20,7 @@ export const register = async (req: Request, res: Response) => {
         res.status(200).send({
             user,
             accessToken: tokens?.accessToken
-         });
+        });
     } catch (err) {
         res.status(400).send(err);
     }
@@ -60,7 +62,7 @@ export const login = async (req: Request, res: Response) => {
             res.status(400).send('wrong username or password');
             return;
         }
-        const validPassword = await bcrypt.compare(req.body.password, user.password);
+        const validPassword = await bcrypt.compare(req.body.password, user.password!);
         if (!validPassword) {
             res.status(400).send('wrong username or password');
             return;
@@ -139,10 +141,54 @@ export const verifyRefreshToken = (refreshToken: string | undefined) => {
     });
 }
 
+export const googleLogin = async (req: Request, res: Response) => {
+    try {
+        const ticket = await client.verifyIdToken({
+            idToken: req.body.googleToken,
+            audience: '552634801343-odnvmi18ds914j0hci9a6mhuqrbuvebk.apps.googleusercontent.com',
+        });
+
+        const payload = ticket.getPayload();
+        if (!payload) {
+            res.sendStatus(500);
+            return
+        }
+
+        const user: User = {
+            email: payload.email ?? "",
+            firstName: payload.given_name ?? "",
+            lastName: payload.family_name
+        }
+        let existingUser = await userModel.findOne({ email: user.email });
+        if (!existingUser) {
+            existingUser = await userModel.create(user)
+        }
+
+        if (!process.env.TOKEN_SECRET) {
+            res.status(500).send('Server Error');
+            return;
+        }
+        // generate token
+        const tokens = generateToken(existingUser._id);
+        if (!tokens) {
+            res.status(500).send('Server Error');
+            return;
+        }
+
+        res.status(200).send({
+            accessToken: tokens.accessToken,
+            user: existingUser
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(400).send("fail");
+    }
+}
+
 export const logout = async (req: Request, res: Response) => {
     try {
-        const user = await verifyRefreshToken(req.body.refreshToken);
-        await user.save();
+        // const user = await verifyRefreshToken(req.body.refreshToken);
+        // await user.save();
         res.status(200).send("success");
     } catch (err) {
         res.status(400).send("fail");

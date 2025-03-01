@@ -4,32 +4,63 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+
 const client = new OAuth2Client('552634801343-odnvmi18ds914j0hci9a6mhuqrbuvebk.apps.googleusercontent.com');
 
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadDir = 'uploads/profile_pictures';
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        const fileName = Date.now() + path.extname(file.originalname);
+        cb(null, fileName);
+    }
+});
+
+const upload = multer({ storage });
+
 export const register = async (req: Request, res: Response) => {
-    try {
-        const password = req.body.password;
+    const uploadMiddleware = upload.single('profilePicture');
+
+    uploadMiddleware(req, res, async (err) => {
+        if (err) {
+            return res.status(400).json({ message: 'Error uploading profile picture', error: err });
+        }
+
+        const { email, password, firstName, username, lastName } = req.body;
+        const profilePicturePath = req.file ? `/uploads/profile_pictures/${req.file.filename}` : undefined;
+
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);
-        const user = await userModel.create({
-            email: req.body.email,
-            password: hashedPassword,
-            firstName: req.body.firstName,
-        });
-        const tokens = generateToken(user.id)
-        res.status(200).send({
-            user,
-            accessToken: tokens?.accessToken
-        });
-    } catch (err) {
-        res.status(400).send(err);
-    }
-};
 
-type Tokens = {
-    accessToken: string,
-    refreshToken: string
-}
+        try {
+            const user = await userModel.create({
+                email,
+                password: hashedPassword,
+                username,
+                lastName,
+                firstName,
+                profilePicture: profilePicturePath,
+            });
+            const tokens = generateToken(user.id);
+
+            res.status(200).send({
+                user,
+                accessToken: tokens?.accessToken,
+            });
+        } catch (err) {
+            console.log(err)
+            res.status(400).send({ message: 'Error registering user', error: err });
+        }
+    });
+};
 
 export const generateToken = (userId: string): Tokens | null => {
     if (!process.env.TOKEN_SECRET) {
@@ -55,6 +86,7 @@ export const generateToken = (userId: string): Tokens | null => {
         refreshToken: refreshToken
     };
 };
+
 export const login = async (req: Request, res: Response) => {
     try {
         const user = await userModel.findOne({ email: req.body.email });
@@ -118,10 +150,9 @@ export const verifyRefreshToken = (refreshToken: string | undefined) => {
                 console.log(113)
                 return
             }
-            //get the user id fromn token
+
             const userId = payload._id;
             try {
-                //get the user form the db
                 const user = await userModel.findById(userId);
                 if (!user) {
                     reject("fail");
@@ -253,3 +284,8 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
         next();
     });
 };
+
+type Tokens = {
+    accessToken: string,
+    refreshToken: string
+}

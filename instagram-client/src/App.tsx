@@ -7,6 +7,7 @@ import { Home } from './components/Home';
 import { PrivateRouteComponent } from './components/PrivateRouteComponent';
 import { Navbar } from './components/Navbar/Navbar';
 import CreatePost from './components/CreatePost/CreatePost';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 interface AppContextProps {
   user?: User;
@@ -22,28 +23,32 @@ export function App() {
   const [navbarItems, setNavbarItems] = useState<ReactNode>([])
 
   return (
-    <AppContext.Provider value={{user, setUser: (user) => {
-      console.log(user)
-      setUser(user)
-    } ,navbarItems, setNavbarItems}}>
-    <BrowserRouter>
-    <Navbar/>
-    <Routes>
-      <Route path='/' element={<PrivateRouteComponent element={<Home/>}/>}/>
-      <Route path='/add' element={<PrivateRouteComponent element={<CreatePost/>}/>}/>
-      <Route path="/signUp" element={<SignUp/>}/>
-      <Route path="/signIn" element={<SignIn/>}/>
-    </Routes>
-  </BrowserRouter>
-  </AppContext.Provider>
-  );
+    /// move secret
+    <GoogleOAuthProvider clientId="552634801343-odnvmi18ds914j0hci9a6mhuqrbuvebk.apps.googleusercontent.com">
+      <AppContext.Provider value={{
+        user, setUser: (user) => {
+          console.log(user)
+          setUser(user)
+        }, navbarItems, setNavbarItems
+      }}>
+        <BrowserRouter>
+          <Navbar />
+          <Routes>
+            <Route path='/' element={<PrivateRouteComponent element={<Home />} />} />
+            <Route path='/add' element={<PrivateRouteComponent element={<CreatePost />} />} />
+            <Route path="/signUp" element={<SignUp />} />
+            <Route path="/signIn" element={<SignIn />} />
+          </Routes>
+        </BrowserRouter>
+      </AppContext.Provider>
+    </GoogleOAuthProvider>);
 }
 
 export interface User {
   _id: string;
   username: string;
   email: string;
-  profilePic: string | null;
+  profilePicture: string | null;
   likedPosts: string[];
 }
 

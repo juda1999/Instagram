@@ -1,26 +1,31 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { PostList } from "../PostList";
 import { Button, IconButton, Modal, Stack } from "@mui/material";
-import { Navbar } from "../Navbar/Navbar";
 import { UserDetails } from "../UserDetails/UserDetails";
 import _ from "lodash";
-import { AppContext, Post } from "../../App";
-import axios from "axios";
+import { AppContext } from "../../App";
 import { useNavigate } from "react-router-dom";
 import { AccountCircle } from "@mui/icons-material";
 import "./Home.css"
+import { useRequestAction } from "../../hooks";
+import { ProfilePic } from "../ProfilePic";
 
 interface HomeContextProps {
-    userId?: string;
-    setUserId?: (userId: string) => void
+    userDetailsId?: string;
+    setUserDetailsId?: (userId: string) => void
   }
 
 
 export const HomeContext = createContext<HomeContextProps>({});
 export function Home() {
     const { setNavbarItems, user } = useContext(AppContext)
-    const [userId, setUserId] = useState<string>();
+    const [userDetailsId, setUserDetailsId] = useState<string>();
     const navigate = useNavigate();
+
+    function handleLogout() {
+        localStorage.removeItem("accessToken");
+        navigate("/signIn")
+    }
 
     useEffect(
         () => {
@@ -34,26 +39,27 @@ export function Home() {
                         onClick={() => navigate("/add")}>
                         Add Post
                     </Button>
-                    <IconButton
-                        onClick={() => setUserId(user?._id)}
-                        size="large"
-                        color="inherit">
-                        <AccountCircle />
-                    </IconButton>
+                    <Button
+                        sx={{
+                            backgroundColor: "aliceblue",
+                            height: "50%"
+                        }}
+                        onClick={() => handleLogout()}>
+                        Logout
+                    </Button>
+                    <ProfilePic path={user?.profilePicture} onClick={() => setUserDetailsId(user._id)} />
                 </Stack>)
 
         },
         [])
 
-        useEffect(() => console.log(user),[user])
-        useEffect(() => console.log(userId),[userId])
     return (
-        <HomeContext.Provider value={{userId, setUserId}}>
+        <HomeContext.Provider value={{userDetailsId, setUserDetailsId}}>
             <div className="container">
                 <Modal
-                 onClose={() => setUserId(undefined)}
-                 open={!_.isNil(userId)}>
-                    <UserDetails userId={userId}/>
+                 onClose={() => setUserDetailsId(undefined)}
+                 open={!_.isNil(userDetailsId)}>
+                    <UserDetails userId={userDetailsId}/>
                 </Modal>
                 <PostList/>
             </div>

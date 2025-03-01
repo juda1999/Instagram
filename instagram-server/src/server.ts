@@ -1,4 +1,4 @@
-import express, { Express } from "express";
+import express, { Express, Request, Response } from "express";
 import mongoose from "mongoose";
 import bodyParser from "body-parser";
 import dotenv from "dotenv";
@@ -23,7 +23,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 app.use(bodyParser.json());
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static("../uploads"));
 app.use('/post', postsRouter);
 app.use('/comment', commentsRouter);
 app.use('/auth', authRouter);
@@ -33,9 +33,9 @@ const options = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Web Dev REST API",
+      title: "Instagram REST API",
       version: "1.0.0",
-      description: "Homework 2025 first semester",
+      description: "Final Project",
     },
     servers: [{ url: "http://localhost:3000", },],
   },

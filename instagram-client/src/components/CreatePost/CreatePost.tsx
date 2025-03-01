@@ -2,30 +2,32 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../App';
-import { Button, Stack, TextField } from '@mui/material';
+import { Button, Stack, TextField, CircularProgress, Snackbar, Alert, Box, Typography, FormLabel, CardMedia, AvatarGroup, Avatar } from '@mui/material';
 
 const CreatePost = () => {
-  const {setNavbarItems, user} = useContext(AppContext)
+  const { setNavbarItems, user } = useContext(AppContext);
   const [title, setTitle] = useState('');
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const navigate = useNavigate()
+  const [success, setSuccess] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(
-    () => {
-      setNavbarItems(
-        <Button
-          sx={{
-              backgroundColor: "aliceblue",
-              height: "50%"
-          }}
-          onClick={() => navigate("/")}>
-          Posts
-        </Button>)
-    },[])
+  useEffect(() => {
+    setNavbarItems(
+      <Button
+        sx={{
+          backgroundColor: 'aliceblue',
+          height: '50%',
+        }}
+        onClick={() => navigate('/')}>
+        Posts
+      </Button>
+    );
+  }, []);
+
   const handleTitleChange = (e) => {
     setTitle(e.target.value);
   };
@@ -45,7 +47,7 @@ const CreatePost = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!title) {
-      setError('Title Required');
+      setError('Title is required');
       return;
     }
 
@@ -54,77 +56,111 @@ const CreatePost = () => {
     formData.append('title', title);
     formData.append('image', image);
     formData.append('content', content);
-    formData.append('uploadedBy', user._id)
+    formData.append('uploadedBy', user._id);
 
     try {
-      const response = await axios('http://localhost:3001/post/create', {
-        method: 'POST',
-        data: formData,
+      const response = await axios.post('http://localhost:3001/post/create', formData, {
         headers: {
-          "Authorization": localStorage.getItem("accessToken")
-        }
+          'Content-Type': 'multipart/form-data',
+          'Authorization': localStorage.getItem('accessToken'),
+        },
       });
 
-      if (!response.status) {
+      if (response.status === 200) {
+        setSuccess(true);
+        navigate('/');
+      } else {
         throw new Error('Failed to create post');
       }
-
-      navigate("/")
-    } catch (error) {
-      setError("Failed to create post");
+    } catch (err) {
+      setError('Failed to create post');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="create-post-container">
-      <h1>Create a New Post</h1>
-      {error && <div className="error">{error}</div>}
-      <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <Stack direction="column" className="form-group">
-          <label htmlFor="title">Title</label>
-          <input
-            type="text"
+    <Box sx={{ padding: 4, maxWidth: 600, margin: '0 auto' }}>
+      <Typography variant="h4" gutterBottom>
+        Create a New Post
+      </Typography>
+      {error && (
+        <Snackbar open={true} autoHideDuration={6000} onClose={() => setError(null)}>
+          <Alert onClose={() => setError(null)} severity="error">
+            {error}
+          </Alert>
+        </Snackbar>
+      )}
+      {success && (
+        <Snackbar open={true} autoHideDuration={6000} onClose={() => setSuccess(false)}>
+          <Alert onClose={() => setSuccess(false)} severity="success">
+            Post created successfully!
+          </Alert>
+        </Snackbar>
+      )}
+      <form onSubmit={handleSubmit}>
+        <Stack direction="column" spacing={2}>
+          <FormLabel htmlFor="title">Title</FormLabel>
+          <TextField
             id="title"
+            variant="outlined"
             value={title}
             onChange={handleTitleChange}
-            placeholder="Enter post title"
+            fullWidth
             required
           />
-        </Stack>
 
-        <Stack direction="column" className="form-group">
-          <label htmlFor="image">Image</label>
-          <input
-            type="file"
-            id="image"
-            accept="image/*"
-            onChange={handleImageChange}/>
+          <Stack direction="column" spacing={1}>
+            <FormLabel htmlFor="image">Image</FormLabel>
+            <label htmlFor="image">
+              <Button
+                variant="outlined"
+                component="span"
+                fullWidth
+                sx={{ textAlign: 'left' }}
+              >
+                Choose Image
+              </Button>
+            </label>
+            <input
+              type="file"
+              id="image"
+              accept="image/*"
+              onChange={handleImageChange}
+              style={{ display: 'none' }}
+            />
+          </Stack>
+
           {imagePreview && (
-            <div className="image-preview">
-              <img src={imagePreview} alt="Preview" />
-            </div>
+            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+              <CardMedia
+                component="img"
+                image={imagePreview}
+                sx={{
+                  width: '100%',
+                  maxHeight: 200,
+                  objectFit: 'cover',
+                }}/>
+            </Box>
           )}
-        </Stack>
 
-        <Stack direction="column" className="form-group">
-          <label htmlFor="content">Content</label>
+          <FormLabel htmlFor="content">Content</FormLabel>
           <TextField
-            sx={{
-              width: "50%"
-            }}
             id="content"
+            variant="outlined"
             value={content}
             onChange={handleContentChange}
-            rows={3}/>
-        </Stack>
+            fullWidth
+            multiline
+            rows={4}
+          />
 
-        <Button variant='contained' type="submit" disabled={loading}>
-          {loading ? 'Creating...' : 'Create Post'}
-        </Button>
+          <Button variant="contained" type="submit" fullWidth disabled={loading}>
+            {loading ? <CircularProgress size={24} /> : 'Create Post'}
+          </Button>
+        </Stack>
       </form>
-    </div>
+    </Box>
   );
 };
 

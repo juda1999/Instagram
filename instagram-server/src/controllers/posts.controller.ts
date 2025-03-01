@@ -55,13 +55,6 @@ class PostsController extends BaseController<Post> {
       const imagePath = req.file ? `/uploads/${req.file.filename}` : undefined;
 
       try {
-        console.log({
-          title,
-          description: content,
-          photo: imagePath,
-          uploadedAt: new Date(),
-          uploadedBy
-        })
         const savedPost = await this.model.create({
           title,
           description: content,

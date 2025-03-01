@@ -4,16 +4,23 @@ import axios from 'axios';
 import { PostList } from '../PostList';
 import "./UserDetails.css";
 import { useRequest } from '../../hooks/useRequest';
+import { ProfilePic } from '../ProfilePic';
 
 interface UserDetailsProps {
-    userId: string
+  userId: string
 }
 
 export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
-  const {user, setUser} = useContext(AppContext)
+  const { user, setUser } = useContext(AppContext)
   const [currentUser, setCurrentUser] = useState<User>();
 
-  const {data} = useRequest(`user/userInfo/${userId}`, { method: "get" })
+  const options = useMemo(
+    () => ({
+      method: "get"
+    }),
+    [])
+
+  const { data } = useRequest(`user/userInfo/${userId}`, options)
 
   useEffect(
     () => setCurrentUser(data?.user),
@@ -22,20 +29,20 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
   const editMode =
     useMemo(
       () => userId === user?._id,
-    [userId, user])
+      [userId, user])
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentUser(user => ({ ...user, username: e.target.value}));
+    setCurrentUser(user => ({ ...user, username: e.target.value }));
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentUser(user => ({ ...user, email: e.target.value}));
+    setCurrentUser(user => ({ ...user, email: e.target.value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      setCurrentUser(user => ({ ...user, profilePic: "file"}));
+      setCurrentUser(user => ({ ...user, profilePic: "file" }));
     }
   };
 
@@ -56,13 +63,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
       <div>
         <div className='picture'>
           <h4>Profile Picture</h4>
-          <div>
-            <img
-              src={currentUser?.profilePic || ""}
-              alt="Profile"
-              style={{ width: '150px', height: '150px', borderRadius: '50%' }}
-            />
-          </div>
+          <ProfilePic path={user.profilePicture} />
         </div>
         {editMode ? (
           <form className='edit' onSubmit={handleSubmit}>
@@ -105,7 +106,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
           </div>
         )}
       </div>
-      <PostList userId={userId}/>
+      <PostList userId={userId} />
     </div>
   );
 };

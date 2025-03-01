@@ -1,52 +1,58 @@
-import React, { useContext, useEffect, useMemo, useReducer, useState } from 'react';
-import { AppContext, Post, User } from '../../App';
-import axios from 'axios';
-import { PostList } from '../PostList';
-import "./UserDetails.css";
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { AppContext, User } from '../../App';
 import { useRequest } from '../../hooks/useRequest';
+import { PostList } from '../PostList';
 import { ProfilePic } from '../ProfilePic';
+import {
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  CardActions,
+  Typography,
+  Box,
+  Stack,
+  FormLabel,
+} from '@mui/material'; // Import Material UI components
+import { useRequestAction } from '../../hooks';
+import { Close, Edit, PhotoCamera } from '@mui/icons-material';
+import { HomeContext } from '../Home';
 
 interface UserDetailsProps {
-  userId: string
+  userId: string;
 }
 
 export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
-  const { user, setUser } = useContext(AppContext)
+  const { user, setUser } = useContext(AppContext);
+  const { setUserDetailsId } = useContext(HomeContext);
   const [currentUser, setCurrentUser] = useState<User>();
+  const [editMode, setEditMode] = useState(false)
+  const [error, setError] = useState("")
 
-  const options = useMemo(
-    () => ({
-      method: "get"
-    }),
-    [])
+  const options = useMemo(() => ({ method: 'get' }), []);
+  const updateUserOptions = useMemo(() => ({ method: 'post' }), []);
+  const { data: userInfo } = useRequest<User>(`user/userInfo/${userId}`, options);
+  const { action: updateUserAction } = useRequestAction(`user/update/${currentUser?._id}`, updateUserOptions)
 
-  const { data } = useRequest(`user/userInfo/${userId}`, options)
-
-  useEffect(
-    () => setCurrentUser(data?.user),
-    [data]);
-
-  const editMode =
-    useMemo(
-      () => userId === user?._id,
-      [userId, user])
+  useEffect(() => setCurrentUser(userInfo), [userInfo]);
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentUser(user => ({ ...user, username: e.target.value }));
+    setCurrentUser((prevUser) => ({ ...prevUser, username: e.target.value }));
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentUser(user => ({ ...user, email: e.target.value }));
+    setCurrentUser((prevUser) => ({ ...prevUser, email: e.target.value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      setCurrentUser(user => ({ ...user, profilePic: "file" }));
+      setCurrentUser((prevUser) => ({ ...prevUser, profilePic: file }));
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!currentUser?.username || !currentUser?.email) {
@@ -54,59 +60,99 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
       return;
     }
 
-    // TODO: update user in DB
-    setUser?.(currentUser);
+    try {
+      await updateUserAction(currentUser);
+      setUser?.(currentUser);
+      setEditMode(false)
+    } catch (error) {
+      setError("Failed to update user details")
+    }
   };
 
   return (
-    <div className='user-details-container'>
-      <div>
-        <div className='picture'>
-          <h4>Profile Picture</h4>
-          <ProfilePic path={user.profilePicture} />
-        </div>
-        {editMode ? (
-          <form className='edit' onSubmit={handleSubmit}>
-            <div className='username'>
-              <label>Username:</label>
-              <input
-                type="text"
-                value={currentUser?.username}
+    <Card sx={{ maxHeight: "100%", overflow: "scroll", backgroundColor: "#f0f4f8" }}>
+      <CardHeader
+        title={<Typography variant="h6">User Details</Typography>}
+        action={
+          <Button onClick={() => setUserDetailsId(undefined)}>
+            <Close />
+          </Button>
+        } />
+
+      <Stack alignItems="center">
+        <CardContent sx={{ width: "50%" }}>
+          <Stack sx={{ position: "relative" }} direction="row" justifyContent="center">
+            <ProfilePic path={currentUser?.profilePicture} />
+            {userId === user?._id &&
+              <Button
+                sx={{ right: 0, position: "absolute" }}
+                onClick={() => setEditMode(true)}
+                variant="text"
+                color="primary">
+                <Edit />
+              </Button>}
+          </Stack>
+
+          {editMode ? (
+            <>
+              <TextField
+                label="Username"
+                value={currentUser?.username || ''}
                 onChange={handleUsernameChange}
-                required
+                variant="outlined"
+                fullWidth
+                margin="normal"
               />
-            </div>
-            <div className='email'>
-              <label>Email:</label>
-              <input
-                type="email"
-                value={currentUser?.email}
+              <TextField
+                label="Email"
+                value={currentUser?.email || ''}
                 onChange={handleEmailChange}
-                required
+                variant="outlined"
+                fullWidth
+                margin="normal"
               />
-            </div>
-            <div className='profile picture'>
-              <label>Profile Picture:</label>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
-            </div>
-            <button type="submit">Save</button>
-          </form>
-        ) : (
-          <div className='not-edit'>
-            <div>
-              <strong>Username:</strong> {currentUser?.username}
-            </div>
-            <div>
-              <strong>Email:</strong> {currentUser?.email}
-            </div>
-          </div>
-        )}
-      </div>
-      <PostList userId={userId} />
-    </div>
+              <Button variant="contained" component="label" startIcon={<PhotoCamera />}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ marginRight: '1rem' }} />
+              </Button>
+            </>
+          ) : (
+            <Box marginTop="1rem">
+              <Stack direction="column" spacing={0.5}>
+                <FormLabel sx={{ fontSize: '0.875rem' }}>Username</FormLabel>
+                <Typography>
+                  {currentUser?.username}
+                </Typography>
+
+                <FormLabel sx={{ fontSize: '0.875rem' }}>Email</FormLabel>
+                <Typography>
+                  {currentUser?.email}
+                </Typography>
+              </Stack>
+            </Box>
+          )}
+        </CardContent>
+
+        <CardActions>
+          {editMode && (
+            <Stack spacing={1} direction="row">
+              <Button onClick={handleSubmit} variant="contained" color="primary">
+                Save Changes
+              </Button>
+              <Button onClick={() => setEditMode(false)} variant="contained" color="primary">
+                cancel
+              </Button>
+            </Stack>
+          )}
+        </CardActions>
+
+        <CardContent sx={{ overflow: "hidden", maxHeight: "100%" }}>
+          <PostList userId={userId} />
+        </CardContent>
+      </Stack>
+    </Card>
   );
 };

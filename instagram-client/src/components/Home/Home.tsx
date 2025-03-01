@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { PostList } from "../PostList";
-import { Button, IconButton, Modal, Stack } from "@mui/material";
+import { Box, Button, IconButton, Modal, Stack } from "@mui/material";
 import { UserDetails } from "../UserDetails/UserDetails";
 import _ from "lodash";
 import { AppContext } from "../../App";
@@ -13,7 +13,7 @@ import { ProfilePic } from "../ProfilePic";
 interface HomeContextProps {
     userDetailsId?: string;
     setUserDetailsId?: (userId: string) => void
-  }
+}
 
 
 export const HomeContext = createContext<HomeContextProps>({});
@@ -54,15 +54,23 @@ export function Home() {
         [])
 
     return (
-        <HomeContext.Provider value={{userDetailsId, setUserDetailsId}}>
-            <div className="container">
+        <HomeContext.Provider value={{ userDetailsId, setUserDetailsId }}>
+            <Box sx={{ scrollbarGutter: "stable"}}>
                 <Modal
-                 onClose={() => setUserDetailsId(undefined)}
-                 open={!_.isNil(userDetailsId)}>
-                    <UserDetails userId={userDetailsId}/>
+                    sx={{
+                        position: "absolute",
+                        overflow: "hidden",
+                        width: "90%",
+                        height: "90vh",
+                        left: "5%",
+                        top: "5%"
+                    }}
+                    onClose={() => setUserDetailsId(undefined)}
+                    open={!_.isNil(userDetailsId)}>
+                    <UserDetails userId={userDetailsId} />
                 </Modal>
-                <PostList/>
-            </div>
+                <PostList />
+            </Box>
         </HomeContext.Provider>
     )
 }

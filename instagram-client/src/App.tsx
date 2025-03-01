@@ -8,6 +8,7 @@ import { PrivateRouteComponent } from './components/PrivateRouteComponent';
 import { Navbar } from './components/Navbar/Navbar';
 import CreatePost from './components/CreatePost/CreatePost';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { Box } from '@mui/material';
 
 interface AppContextProps {
   user?: User;
@@ -32,13 +33,15 @@ export function App() {
         }, navbarItems, setNavbarItems
       }}>
         <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path='/' element={<PrivateRouteComponent element={<Home />} />} />
-            <Route path='/add' element={<PrivateRouteComponent element={<CreatePost />} />} />
-            <Route path="/signUp" element={<SignUp />} />
-            <Route path="/signIn" element={<SignIn />} />
-          </Routes>
+            <Navbar />
+            <Box sx={{ marginTop: "16px"}}>
+            <Routes>
+              <Route path='/' element={<PrivateRouteComponent element={<Home />} />} />
+              <Route path='/add' element={<PrivateRouteComponent element={<CreatePost />} />} />
+              <Route path="/signUp" element={<SignUp />} />
+              <Route path="/signIn" element={<SignIn />} />
+            </Routes>
+            </Box>
         </BrowserRouter>
       </AppContext.Provider>
     </GoogleOAuthProvider>);

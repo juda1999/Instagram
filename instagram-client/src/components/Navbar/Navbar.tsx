@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 export const Navbar: React.FC = () => {
   const { navbarItems } = useContext(AppContext);
   return (
-      <AppBar position="static">
+      <AppBar position="sticky">
         <Toolbar sx={{ justifyContent: "space-between"}}>
           <Stack direction="row" spacing={1}>
             <Typography variant="h6">

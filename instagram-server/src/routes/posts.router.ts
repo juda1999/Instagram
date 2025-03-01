@@ -40,7 +40,7 @@ export const postsRouter = Router();
  * @swagger
  * paths:
  *   /post:
- *     get:
+ *     post:
  *       summary: Get all posts
  *       security:
  *         - bearerAuth: []
@@ -55,6 +55,7 @@ export const postsRouter = Router();
  *                 type: array
  *                 items:
  *                   $ref: '#/components/schemas/Post'
+ *   /post/create:
  *     post:
  *       summary: Create a new post
  *       description: Adds a new post to the database
@@ -165,7 +166,7 @@ export const postsRouter = Router();
  */
 
 postsRouter.post('/', authMiddleware, postsController.getPagedPosts.bind(postsController));
-postsRouter.post('/', authMiddleware, postsController.addItem.bind(postsController));
+postsRouter.post('/create', authMiddleware, postsController.create.bind(postsController));
 postsRouter.get('/:id', authMiddleware, postsController.getItemById.bind(postsController));
 postsRouter.post('/uploader', authMiddleware, postsController.getPagedPosts.bind(postsController));
 postsRouter.put('/:id', authMiddleware, postsController.updateItem.bind(postsController));

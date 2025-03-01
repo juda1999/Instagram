@@ -18,7 +18,6 @@ export const SignIn: React.FC = () => {
               const response = await axios.get<{ user: User; accessToken: string}>('http://localhost:3001/auth/refresh', { headers: { "Authorization": token}});
                 if(response.data.user) {
                   localStorage.setItem("accessToken", response.data.accessToken)
-                  console.log("here", response)
                   setUser(response.data.user)
                   navigate("/")
               }
@@ -44,7 +43,6 @@ export const SignIn: React.FC = () => {
       const response = await axios.post<{user: User; accessToken: string}>('http://localhost:3001/auth/login', { email, password });
 
       localStorage.setItem('accessToken', response.data.accessToken);
-      console.log(response.data.user)
       setUser(response.data.user)
       navigate('/');
     } catch (err) {

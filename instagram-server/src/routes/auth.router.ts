@@ -162,4 +162,4 @@ authRouter.get("/refresh", refresh);
  */
 authRouter.post("/logout", logout);
 
-authRouter.post("/userInfo", getUserInfo)
+authRouter.get("/userInfo", getUserInfo)

@@ -1,8 +1,9 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useReducer, useState } from 'react';
 import { AppContext, Post, User } from '../../App';
 import axios from 'axios';
 import { PostList } from '../PostList';
 import "./UserDetails.css";
+import { useRequest } from '../../hooks/useRequest';
 
 interface UserDetailsProps {
     userId: string
@@ -11,28 +12,17 @@ interface UserDetailsProps {
 export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
   const {user, setUser} = useContext(AppContext)
   const [currentUser, setCurrentUser] = useState<User>();
-  const [currentUserPosts, setCurrentUserPosts] =  useState<Post[]>([])
+
+  const {data} = useRequest(`auth/userInfo?user=${userId}`, { method: "get" })
+
+  useEffect(
+    () => setUser(data?.user),
+    [data]);
 
   const editMode =
     useMemo(
       () => userId === user?._id,
     [userId, user])
-
-  async function handleUserDetails() {
-    try {
-      const response = await axios.post("http://localhost:3001/auth/userInfo", { userId })
-      setCurrentUser(response.data.user)
-    } catch (error) {
-    }
-  }
-
-  async function handleUserPosts() {
-    try {
-      const response = await axios.get(`http://localhost:3001/post?uploader={${userId}}`)
-      setCurrentUserPosts(response.data.posts)
-    } catch (error) {
-    }
-  }
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentUser(user => ({ ...user, username: e.target.value}));
@@ -68,7 +58,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
           <h4>Profile Picture</h4>
           <div>
             <img
-              src={user?.profilePic || ""}
+              src={currentUser?.profilePic || ""}
               alt="Profile"
               style={{ width: '150px', height: '150px', borderRadius: '50%' }}
             />

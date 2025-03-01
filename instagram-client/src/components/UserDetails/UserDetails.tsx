@@ -14,7 +14,7 @@ import {
   Box,
   Stack,
   FormLabel,
-} from '@mui/material'; // Import Material UI components
+} from '@mui/material';
 import { useRequestAction } from '../../hooks';
 import { Close, Edit, PhotoCamera } from '@mui/icons-material';
 import { HomeContext } from '../Home';
@@ -36,14 +36,6 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
   const { action: updateUserAction } = useRequestAction(`user/update/${currentUser?._id}`, updateUserOptions)
 
   useEffect(() => setCurrentUser(userInfo), [userInfo]);
-
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentUser((prevUser) => ({ ...prevUser, username: e.target.value }));
-  };
-
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCurrentUser((prevUser) => ({ ...prevUser, email: e.target.value }));
-  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
@@ -98,15 +90,23 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
               <TextField
                 label="Username"
                 value={currentUser?.username || ''}
-                onChange={handleUsernameChange}
+                onChange={(e) => setCurrentUser((prevUser) => ({ ...prevUser, username: e.target.value }))}
                 variant="outlined"
                 fullWidth
                 margin="normal"
               />
               <TextField
-                label="Email"
-                value={currentUser?.email || ''}
-                onChange={handleEmailChange}
+                label="First name"
+                value={currentUser?.firstName || ''}
+                onChange={(e) => setCurrentUser((prevUser) => ({ ...prevUser, firstName: e.target.value }))}
+                variant="outlined"
+                fullWidth
+                margin="normal"
+              />
+              <TextField
+                label="Last name"
+                value={currentUser?.lastName || ''}
+                onChange={(e) => setCurrentUser((prevUser) => ({ ...prevUser, lastName: e.target.value }))}
                 variant="outlined"
                 fullWidth
                 margin="normal"
@@ -130,6 +130,16 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
                 <FormLabel sx={{ fontSize: '0.875rem' }}>Email</FormLabel>
                 <Typography>
                   {currentUser?.email}
+                </Typography>
+
+                <FormLabel sx={{ fontSize: '0.875rem' }}>First Name</FormLabel>
+                <Typography>
+                  {currentUser?.firstName}
+                </Typography>
+
+                <FormLabel sx={{ fontSize: '0.875rem' }}>Last Name</FormLabel>
+                <Typography>
+                  {currentUser?.lastName}
                 </Typography>
               </Stack>
             </Box>

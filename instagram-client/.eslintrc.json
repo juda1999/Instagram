@@ -26,7 +26,6 @@
         "semi": true,
         "tabWidth": 2
       }],
-      "react/jsx-first-prop-new-line": ["warn", "always"],
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "no-console": "warn"
     }

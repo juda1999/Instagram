@@ -24,9 +24,10 @@ import { HomeContext } from '../Home';
 
 interface PostProps {
   post: PostInterface;
+  editEnabled?: boolean;
 }
 
-export const Post: React.FC<PostProps> = ({ post }) => {
+export const Post: React.FC<PostProps> = ({ post, editEnabled = false }) => {
   const { user, setUser } = useContext(AppContext);
   const { setUserDetailsId } = useContext(HomeContext)
   const options = useMemo(() => ({ method: 'get' }), []);
@@ -70,12 +71,12 @@ export const Post: React.FC<PostProps> = ({ post }) => {
         overflow: 'hidden',
         margin: 2,
       }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', padding: 2 }}>
+      <Stack alignItems="center" direction="row" spacing={2} sx={{ alignItems: 'center', padding: 2 }}>
         <ProfilePic path={postUserData?.profilePicture} onClick={() => setUserDetailsId(postUserData?._id)}/>
-        <Typography variant="body2" color="text.secondary">
+        <Typography color="text.secondary">
           {postUserData?.username}
         </Typography>
-      </Box>
+      </Stack>
 
       <CardMedia
         component="img"
@@ -87,8 +88,7 @@ export const Post: React.FC<PostProps> = ({ post }) => {
 
       <CardContent>
         <Typography
-          variant="h6"
-          component="div"
+          variant="h5"
           sx={{ fontWeight: 'bold', marginBottom: 1 }}
         >
           {post.title}

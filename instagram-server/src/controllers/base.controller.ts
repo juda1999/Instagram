@@ -7,12 +7,12 @@ export class BaseController<T> {
         this.model = model;
     }
 
-     async getAllItems(req: Request, res: Response) {
+    async getAllItems(req: Request, res: Response) {
         const filterByPostId = req.query.postId;
         const filterByUploader = req.query.uploader;
         try {
             if (filterByPostId) {
-                const item = await this.model.find({ 'post': filterByPostId  });
+                const item = await this.model.find({ 'post': filterByPostId });
                 res.send(item);
             }
             if (filterByUploader) {
@@ -58,10 +58,10 @@ export class BaseController<T> {
             const item = await this.model.findByIdAndUpdate(
                 itemId,
                 {
-                     _id: itemId,
-                      ...req.body
-                });
-
+                    _id: itemId,
+                    ...req.body
+                },
+                { new: true });
             res.status(200).send(item);
         } catch (error) {
             res.status(400).send(error);

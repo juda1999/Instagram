@@ -55,33 +55,33 @@ export function Home() {
         >
           Logout
         </Button>
-        <ProfilePic
-          path={user?.profilePicture}
-          onClick={() => setUserDetailsId(user._id)}
-        />
+        {user?.profilePicture && (
+          <ProfilePic
+            path={user?.profilePicture}
+            onClick={() => setUserDetailsId(user._id)}
+          />
+        )}
       </Stack>
     );
-  }, []);
+  }, [user]);
 
   return (
     <HomeContext.Provider value={{ userDetailsId, setUserDetailsId }}>
-      <Box sx={{ scrollbarGutter: 'stable' }}>
-        <Modal
-          sx={{
-            position: 'absolute',
-            overflow: 'hidden',
-            width: '90%',
-            height: '90vh',
-            left: '5%',
-            top: '5%',
-          }}
-          onClose={() => setUserDetailsId(undefined)}
-          open={!_.isNil(userDetailsId)}
-        >
-          <UserDetails userId={userDetailsId} />
-        </Modal>
-        <PostList />
-      </Box>
+      <Modal
+        sx={{
+          position: 'absolute',
+          overflow: 'hidden',
+          width: '90%',
+          height: '90vh',
+          left: '5%',
+          top: '5%',
+        }}
+        onClose={() => setUserDetailsId(undefined)}
+        open={!_.isNil(userDetailsId)}
+      >
+        <UserDetails userId={userDetailsId} />
+      </Modal>
+      <PostList />
     </HomeContext.Provider>
   );
 }

@@ -70,7 +70,7 @@ export interface User {
 
 export interface Post {
   _id: string;
-  photo: string;
+  photo: string | null;
   title: string;
   uploadedBy: string;
   description: string;

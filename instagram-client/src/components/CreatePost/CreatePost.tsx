@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../../App';
@@ -15,7 +14,8 @@ import {
   CardMedia,
 } from '@mui/material';
 import { useRequestAction } from '../../hooks';
-import { method } from 'lodash';
+import { head, method } from 'lodash';
+import api from '../../api';
 
 export const CreatePost = () => {
   const { setNavbarItems, user } = useContext(AppContext);
@@ -37,6 +37,21 @@ export const CreatePost = () => {
   const { action: summarizeRequest } = useRequestAction(
     'post/summarize',
     summarizeRequestOptions
+  );
+
+  const createPostOptions = useMemo(
+    () => ({
+      method: 'post',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+    []
+  );
+
+  const { action: createPost } = useRequestAction(
+    'post/create',
+    createPostOptions
   );
 
   useEffect(() => {
@@ -82,16 +97,7 @@ export const CreatePost = () => {
     formData.append('uploadedBy', user._id);
 
     try {
-      const response = await axios.post(
-        'http://localhost:3001/post/create',
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: localStorage.getItem('accessToken'),
-          },
-        }
-      );
+      const response = await createPost(formData);
 
       if (response.status === 200) {
         navigate('/');

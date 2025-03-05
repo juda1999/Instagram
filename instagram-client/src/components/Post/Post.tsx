@@ -20,6 +20,7 @@ import { useRequestAction } from '../../hooks';
 import _ from 'lodash';
 import { ProfilePic } from '../ProfilePic';
 import { HomeContext } from '../Home';
+import { getImageRequestPath } from '../../api';
 
 interface PostProps {
   post: PostInterface;
@@ -39,6 +40,8 @@ export const Post: React.FC<PostProps> = ({
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedPost, setEditedPost] = useState({ ...post });
   const [savedPost, setSavedPost] = useState({ ...post });
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const updateUserOptions = useMemo(() => ({ method: 'post' }), []);
   const { action: updateUserAction, error } = useRequestAction(
@@ -50,9 +53,18 @@ export const Post: React.FC<PostProps> = ({
     `post/${savedPost._id}`,
     deletePostOptions
   );
-  const updatePostOptions = useMemo(() => ({ method: 'put' }), []);
+  const updatePostOptions = useMemo(
+    () => ({
+      method: 'post',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+    []
+  );
+
   const { action: updatePostAction } = useRequestAction(
-    `post/${savedPost._id}`,
+    `post/create`,
     updatePostOptions
   );
 
@@ -80,7 +92,14 @@ export const Post: React.FC<PostProps> = ({
   }
 
   async function handleSaveEdit() {
-    const response = await updatePostAction(editedPost);
+    const formData = new FormData();
+    formData.append('id', editedPost._id);
+    formData.append('image', image);
+    formData.append('content', editedPost.description);
+    formData.append('title', editedPost.title);
+    formData.append('uploadedBy', editedPost.uploadedBy);
+
+    const response = await updatePostAction(formData);
     setSavedPost(response.data);
     setIsEditMode(false);
   }
@@ -134,7 +153,7 @@ export const Post: React.FC<PostProps> = ({
       <CardMedia
         component="img"
         height="200"
-        image={`http://localhost:3001${editedPost.photo}`}
+        image={getImageRequestPath(post.photo)}
         alt="Post Image"
         sx={{ objectFit: 'cover' }}
       />
@@ -182,11 +201,28 @@ export const Post: React.FC<PostProps> = ({
                 type="file"
                 id="image"
                 accept="image/*"
-                onChange={(e) =>
-                  setEditedPost({ ...editedPost, description: e.target.value })
-                }
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setImage(file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
+                }}
                 style={{ display: 'none' }}
               />
+              {imagePreview && (
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                  <CardMedia
+                    component="img"
+                    image={imagePreview}
+                    sx={{
+                      width: '100%',
+                      maxHeight: 200,
+                      objectFit: 'cover',
+                    }}
+                  />
+                </Box>
+              )}
             </Stack>
             <Stack direction="row" justifyContent="space-between">
               <Button
@@ -240,7 +276,7 @@ export const Post: React.FC<PostProps> = ({
                 )}
               </Box>
               <IconButton onClick={handleLiked}>
-                {user.likedPosts.includes(savedPost._id) ? (
+                {user.likedPosts.includes(savedPost?._id) ? (
                   <Favorite color="error" />
                 ) : (
                   <FavoriteBorder color="action" />
@@ -260,7 +296,7 @@ export const Post: React.FC<PostProps> = ({
             refetch();
             setCommentModalOpen(false);
           }}
-          postId={savedPost._id}
+          postId={savedPost?._id}
           comments={comments}
         />
       </Dialog>

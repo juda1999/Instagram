@@ -1,6 +1,5 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import './SignIn.css';
 import { AppContext, User } from '../../App';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
@@ -13,9 +12,10 @@ import {
   CircularProgress,
   Grid2,
 } from '@mui/material';
+import axios from 'axios';
 
 export const SignIn: React.FC = () => {
-  const { setUser } = useContext(AppContext);
+  const { setUser, setNavbarItems } = useContext(AppContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -28,12 +28,14 @@ export const SignIn: React.FC = () => {
     options
   );
 
+  useEffect(() => setNavbarItems(null), []);
+
   async function handleOnLoad() {
     const token = localStorage.getItem('accessToken');
     if (token) {
       try {
         const response = await axios.get<UserResponse>(
-          'http://localhost:3001/auth/refresh',
+          'http://localhost:3001/auth/tokenLogin',
           { headers: { Authorization: token } }
         );
         if (response.data.user) {
@@ -47,6 +49,7 @@ export const SignIn: React.FC = () => {
 
   function handleSuccessLogin(userResponse: UserResponse) {
     localStorage.setItem('accessToken', userResponse.accessToken);
+    localStorage.setItem('refreshToken', userResponse.refreshToken);
     setUser(userResponse.user);
     navigate('/');
   }
@@ -64,7 +67,7 @@ export const SignIn: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post<{ user: User; accessToken: string }>(
+      const response = await axios.post<UserResponse>(
         'http://localhost:3001/auth/login',
         { email, password }
       );
@@ -104,8 +107,7 @@ export const SignIn: React.FC = () => {
         Sign In
       </Typography>
       {error && (
-        <Typography
-color="error" variant="body2" sx={{ marginBottom: 2 }}>
+        <Typography color="error" variant="body2" sx={{ marginBottom: 2 }}>
           {error}
         </Typography>
       )}
@@ -140,8 +142,7 @@ color="error" variant="body2" sx={{ marginBottom: 2 }}>
               disabled={loading}
             >
               {loading ? (
-                <CircularProgress
-size={24} color="inherit" />
+                <CircularProgress size={24} color="inherit" />
               ) : (
                 'Sign In'
               )}
@@ -170,4 +171,5 @@ size={24} color="inherit" />
 type UserResponse = {
   user: User;
   accessToken: string;
+  refreshToken: string;
 };

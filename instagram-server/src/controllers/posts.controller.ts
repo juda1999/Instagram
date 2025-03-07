@@ -1,9 +1,13 @@
 import { postModel, Post } from "../models/post";
+import axios from 'axios';
 import { Request, Response } from "express";
 import { BaseController } from "./base.controller";
 import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
+import OpenAI from "openai";
+
+const openai = new OpenAI({ baseURL: "https://api.aimlapi.com", apiKey: 'e4db56dcc09e4e5e88b5a60b4f62915c' });
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -43,28 +47,73 @@ class PostsController extends BaseController<Post> {
     }
   }
 
+  async summarize(req: Request, res: Response) {
+    const text = req.body.text;
+    if (!text) {
+      res.status(400).send();
+      return
+    }
+
+    console.log(req.body)
+
+    try {
+      const completion = await openai.chat.completions.create({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "user",
+            content: `Summarize this text: ${text}`,
+          },
+        ],
+        max_tokens: 256,
+        temperature: 0.7
+      });
+
+      console.log(completion)
+      res.status(200).send("");
+    } catch (error) {
+      console.error(error)
+      res.status(500).send(error)
+    }
+  }
+
   async create(req: Request, res: Response) {
     const uploadMiddleware = upload.single('image');
-
+    console.log(req.body)
     uploadMiddleware(req, res, async (err) => {
       if (err) {
-        return res.status(400).json({ message: 'Error uploading file', error: err });
+        res.status(400).json({ message: 'Error uploading file', error: err });
       }
 
-      const { title, content, uploadedBy } = req.body;
-      const imagePath = req.file ? `/uploads/${req.file.filename}` : undefined;
-
       try {
-        const savedPost = await this.model.create({
-          title,
-          description: content,
-          photo: imagePath,
-          uploadedAt: new Date(),
-          uploadedBy
-        });
-        return res.status(200).json(savedPost);
+        const { title, content, uploadedBy, _id } = req.body;
+
+        const imagePath = req.file ? `/uploads/${req.file.filename}` : undefined;
+        const filter = _id ? { _id } : {};
+        let savedPost;
+        if (!_id) {
+          savedPost = await this.model.create(
+            {
+              title,
+              description: content,
+              photo: imagePath,
+              uploadedAt: new Date(),
+              uploadedBy
+            });
+        } else {
+          savedPost = await this.model.findByIdAndUpdate({ _id },
+            {
+              title,
+              description: content,
+              photo: imagePath,
+              uploadedAt: new Date(),
+              uploadedBy
+            }, { new: true });
+        }
+        res.status(200).json(savedPost);
       } catch (err) {
-        return res.status(500).json({ message: 'Error saving post', error: err });
+        console.log(err)
+        res.status(500).json({ message: 'Error saving post', error: err });
       }
     });
   }

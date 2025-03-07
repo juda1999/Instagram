@@ -8,8 +8,8 @@ import { authRouter } from "./routes/auth.router";
 import swaggerJsDoc from "swagger-jsdoc";
 import swaggerUI from "swagger-ui-express";
 import cors from "cors"
-import path from "path";
 import { userRouter } from "./routes/user.router";
+import { imagesRouter } from "./routes/images.router";
 
 export const app = express();
 dotenv.config();
@@ -23,7 +23,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 app.use(bodyParser.json());
 
-app.use('/uploads', express.static("../uploads"));
+app.use('/image', imagesRouter);
 app.use('/post', postsRouter);
 app.use('/comment', commentsRouter);
 app.use('/auth', authRouter);

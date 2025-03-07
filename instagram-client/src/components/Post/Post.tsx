@@ -9,7 +9,6 @@ import {
   Stack,
   IconButton,
   TextField,
-  FormLabel,
   Box,
 } from '@mui/material';
 import { Delete, Edit, Favorite, FavoriteBorder } from '@mui/icons-material';
@@ -19,26 +18,31 @@ import { CommentsDialog } from '../CommentDialog/CommentDialog';
 import { useRequestAction } from '../../hooks';
 import _ from 'lodash';
 import { ProfilePic } from '../ProfilePic';
-import { HomeContext } from '../Home';
+import { getImageRequestPath } from '../../api';
+import { useNavigate } from 'react-router-dom';
 
 interface PostProps {
   post: PostInterface;
   editEnabled?: boolean;
   deletePost?: () => void;
+  onEditPost: (post: PostInterface) => void;
 }
 
 export const Post: React.FC<PostProps> = ({
   deletePost,
   post,
+  onEditPost,
   editEnabled = false,
 }) => {
   const { user, setUser } = useContext(AppContext);
-  const { setUserDetailsId } = useContext(HomeContext);
+  const navigate = useNavigate();
   const options = useMemo(() => ({ method: 'get' }), []);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedPost, setEditedPost] = useState({ ...post });
   const [savedPost, setSavedPost] = useState({ ...post });
+  const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null);
 
   const updateUserOptions = useMemo(() => ({ method: 'post' }), []);
   const { action: updateUserAction, error } = useRequestAction(
@@ -50,9 +54,18 @@ export const Post: React.FC<PostProps> = ({
     `post/${savedPost._id}`,
     deletePostOptions
   );
-  const updatePostOptions = useMemo(() => ({ method: 'put' }), []);
+  const updatePostOptions = useMemo(
+    () => ({
+      method: 'post',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+    []
+  );
+
   const { action: updatePostAction } = useRequestAction(
-    `post/${savedPost._id}`,
+    `post/create`,
     updatePostOptions
   );
 
@@ -80,9 +93,17 @@ export const Post: React.FC<PostProps> = ({
   }
 
   async function handleSaveEdit() {
-    const response = await updatePostAction(editedPost);
+    const formData = new FormData();
+    formData.append('_id', editedPost._id);
+    formData.append('image', image);
+    formData.append('content', editedPost.description);
+    formData.append('title', editedPost.title);
+    formData.append('uploadedBy', editedPost.uploadedBy);
+
+    const response = await updatePostAction(formData);
     setSavedPost(response.data);
     setIsEditMode(false);
+    onEditPost(response.data);
   }
 
   async function handleDeletePost() {
@@ -109,7 +130,8 @@ export const Post: React.FC<PostProps> = ({
       >
         <ProfilePic
           path={postUserData?.profilePicture}
-          onClick={() => setUserDetailsId(postUserData?._id)}
+          name={postUserData?.firstName}
+          onClick={() => navigate(`/user/${postUserData._id}`)}
         />
         <Typography sx={{ flex: 1 }} color="text.secondary">
           {postUserData?.username}
@@ -134,7 +156,7 @@ export const Post: React.FC<PostProps> = ({
       <CardMedia
         component="img"
         height="200"
-        image={`http://localhost:3001${editedPost.photo}`}
+        image={getImageRequestPath(post.photo)}
         alt="Post Image"
         sx={{ objectFit: 'cover' }}
       />
@@ -182,11 +204,28 @@ export const Post: React.FC<PostProps> = ({
                 type="file"
                 id="image"
                 accept="image/*"
-                onChange={(e) =>
-                  setEditedPost({ ...editedPost, description: e.target.value })
-                }
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setImage(file);
+                    setImagePreview(URL.createObjectURL(file));
+                  }
+                }}
                 style={{ display: 'none' }}
               />
+              {imagePreview && (
+                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                  <CardMedia
+                    component="img"
+                    image={imagePreview}
+                    sx={{
+                      width: '100%',
+                      maxHeight: 200,
+                      objectFit: 'cover',
+                    }}
+                  />
+                </Box>
+              )}
             </Stack>
             <Stack direction="row" justifyContent="space-between">
               <Button
@@ -229,18 +268,16 @@ export const Post: React.FC<PostProps> = ({
 
             <Stack direction="row" justifyContent="space-between">
               <Box>
-                {comments?.length > 0 && (
-                  <Button
-                    onClick={() => setCommentModalOpen(true)}
-                    sx={{ height: '30px', textTransform: 'none' }}
-                    variant="outlined"
-                  >
-                    <Typography variant="body2">View Comments</Typography>
-                  </Button>
-                )}
+                <Button
+                  onClick={() => setCommentModalOpen(true)}
+                  sx={{ height: '30px', textTransform: 'none' }}
+                  variant="outlined"
+                >
+                  <Typography variant="body2">Comments</Typography>
+                </Button>
               </Box>
               <IconButton onClick={handleLiked}>
-                {user.likedPosts.includes(savedPost._id) ? (
+                {user.likedPosts.includes(savedPost?._id) ? (
                   <Favorite color="error" />
                 ) : (
                   <FavoriteBorder color="action" />
@@ -254,14 +291,15 @@ export const Post: React.FC<PostProps> = ({
       <Dialog
         open={commentModalOpen}
         onClose={() => setCommentModalOpen(false)}
-        maxWidth="lg"
       >
         <CommentsDialog
-          onClose={() => {
+          onSubmit={() => {
             refetch();
+          }}
+          onClose={() => {
             setCommentModalOpen(false);
           }}
-          postId={savedPost._id}
+          postId={savedPost?._id}
           comments={comments}
         />
       </Dialog>

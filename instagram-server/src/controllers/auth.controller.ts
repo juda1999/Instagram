@@ -53,10 +53,10 @@ export const register = async (req: Request, res: Response) => {
 
             res.status(200).send({
                 user,
+                refreshToken: tokens?.refreshToken,
                 accessToken: tokens?.accessToken,
             });
         } catch (err) {
-            console.log(err)
             res.status(400).send({ message: 'Error registering user', error: err });
         }
     });
@@ -103,7 +103,7 @@ export const login = async (req: Request, res: Response) => {
             res.status(500).send('Server Error');
             return;
         }
-        // generate token
+
         const tokens = generateToken(user._id);
         if (!tokens) {
             res.status(500).send('Server Error');
@@ -131,23 +131,20 @@ type tUser = Document<unknown, {}, User> & User & Required<{
 }> & {
     __v: number;
 }
-export const verifyRefreshToken = (refreshToken: string | undefined) => {
+
+export const verifyToken = (refreshToken: string | undefined) => {
     return new Promise<tUser>((resolve, reject) => {
         if (!refreshToken) {
-            console.log(103)
-
             reject("fail");
             return;
         }
         if (!process.env.TOKEN_SECRET) {
-            console.log(107)
             reject("fail");
             return;
         }
         jwt.verify(refreshToken, process.env.TOKEN_SECRET, async (err: any, payload: any) => {
             if (err) {
                 reject("fail");
-                console.log(113)
                 return
             }
 
@@ -165,7 +162,6 @@ export const verifyRefreshToken = (refreshToken: string | undefined) => {
                 resolve(user);
             } catch (err) {
                 reject("fail");
-                console.log(131)
                 return;
             }
         });
@@ -207,12 +203,12 @@ export const googleLogin = async (req: Request, res: Response) => {
         }
 
         res.status(200).send({
+            refreshToken: tokens.refreshToken,
             accessToken: tokens.accessToken,
             user: existingUser
         });
     } catch (error) {
-        console.log(error)
-        res.status(400).send("fail");
+        res.status(500).send("fail");
     }
 }
 
@@ -228,11 +224,8 @@ export const logout = async (req: Request, res: Response) => {
 
 export const refresh = async (req: Request, res: Response) => {
     try {
-        const authorization = req.header("authorization");
-        const token = authorization && authorization.split(' ')[1];
-        const user = await verifyRefreshToken(token);
+        const user = await verifyToken(req.body.refreshToken);
         if (!user) {
-            console.log(166)
             res.status(400).send("fail");
             return;
         }
@@ -250,9 +243,39 @@ export const refresh = async (req: Request, res: Response) => {
         res.status(200).send(
             {
                 accessToken: tokens.accessToken,
+                refreshToken: tokens.refreshToken,
+            });
+    } catch (err) {
+        res.status(400).send("fail");
+    }
+};
+
+export const tokenLogin = async (req: Request, res: Response) => {
+    try {
+        const authorization = req.header("authorization");
+        const token = authorization && authorization.split(' ')[1];
+        const user = await verifyToken(token);
+        if (!user) {
+            res.status(400).send("fail");
+            return;
+        }
+        const tokens = generateToken(user._id);
+
+        if (!tokens) {
+            res.status(500).send('Server Error');
+            return;
+        }
+        if (!user.refreshToken) {
+            user.refreshToken = [];
+        }
+        user.refreshToken.push(tokens.refreshToken);
+        await user.save();
+        res.status(200).send(
+            {
+                refreshToken: tokens.refreshToken,
+                accessToken: tokens.accessToken,
                 user: user
             });
-        //send new token
     } catch (err) {
         res.status(400).send("fail");
     }

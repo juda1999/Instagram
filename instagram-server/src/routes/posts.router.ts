@@ -171,3 +171,4 @@ postsRouter.get('/:id', authMiddleware, postsController.getItemById.bind(postsCo
 postsRouter.post('/uploader', authMiddleware, postsController.getPagedPosts.bind(postsController));
 postsRouter.put('/:id', authMiddleware, postsController.updateItem.bind(postsController));
 postsRouter.delete('/:id',authMiddleware, postsController.deleteItem.bind(postsController));
+postsRouter.post('/summarize',authMiddleware, postsController.summarize.bind(postsController));

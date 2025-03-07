@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, register, refresh, logout, googleLogin } from '../controllers/auth.controller';
+import { login, register, tokenLogin, logout, googleLogin, refresh } from '../controllers/auth.controller';
 
 export const authRouter = Router();
 /**
@@ -95,9 +95,9 @@ authRouter.post('/register', register);
  *                 refreshToken:
  *                   type: string
  *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *                 _id:
- *                   type: string
- *                   example: 60d0fe4f5311236168a109ca
+ *                 user:
+ *                   type:
+ *                     $ref: '#/components/schemas/User'
  *       400:
  *         description: Invalid credentials or request
  *       500:
@@ -132,7 +132,7 @@ authRouter.post('/login', login);
  *       500:
  *         description: Server error
  */
-authRouter.get("/refresh", refresh);
+authRouter.post("/refresh", refresh);
 
 /**
  * @swagger
@@ -162,4 +162,41 @@ authRouter.get("/refresh", refresh);
  */
 authRouter.post("/logout", logout);
 
-authRouter.post("/googleLogin", googleLogin)
+/**
+ * @swagger
+ * /auth/googleLogin:
+ *   post:
+ *     summary: User login with google cloud
+ *     description: The user can login with google and not register an account
+ *     tags:
+ *       - Auth
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               googleToken:
+ *                 type: string
+ *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 user:
+ *                   type:
+ *                     $ref: '#/components/schemas/User'
+ *       500:
+ *         description: Server error
+ */
+authRouter.post("/googleLogin", googleLogin);
+
+authRouter.get("/tokenLogin", tokenLogin);

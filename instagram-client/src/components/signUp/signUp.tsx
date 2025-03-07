@@ -1,7 +1,6 @@
-import React, { useContext, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { AppContext, User } from '../../App';
+import { AppContext } from '../../App';
 import {
   Button,
   TextField,
@@ -15,7 +14,7 @@ import { PhotoCamera } from '@mui/icons-material';
 import { useRequestAction } from '../../hooks';
 
 export const SignUp: React.FC = () => {
-  const { setUser } = useContext(AppContext);
+  const { setUser, setNavbarItems } = useContext(AppContext);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +24,7 @@ export const SignUp: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  useEffect(() => setNavbarItems(null), []);
 
   const options = useMemo(
     () => ({
@@ -179,8 +179,7 @@ export const SignUp: React.FC = () => {
               disabled={loading}
             >
               {loading ? (
-                <CircularProgress
-size={24} color="inherit" />
+                <CircularProgress size={24} color="inherit" />
               ) : (
                 'Register'
               )}

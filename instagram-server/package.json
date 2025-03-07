@@ -20,6 +20,7 @@
   "author": "Mever and Juda",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.8.1",
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
@@ -29,10 +30,12 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.2",
     "multer": "^1.4.5-lts.1",
+    "openai": "^4.86.1",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
+    "@gradio/client": "^1.13.0",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",

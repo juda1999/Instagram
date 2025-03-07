@@ -14,7 +14,6 @@ imagesRouter.get("/", (req: Request, res: Response) => {
     const fullPath = path.join(__dirname, `../../${imagePath}`);
     try {
         fs.exists(fullPath, (exists) => {
-            console.log(fullPath)
             if (!exists) {
                 return res.status(404).send('Image not found');
             }

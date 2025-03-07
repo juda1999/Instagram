@@ -96,8 +96,7 @@ authRouter.post('/register', register);
  *                   type: string
  *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *                 user:
- *                   type:
- *                     $ref: '#/components/schemas/User'
+ *                   $ref: '#/components/schemas/User'
  *       400:
  *         description: Invalid credentials or request
  *       500:
@@ -192,11 +191,41 @@ authRouter.post("/logout", logout);
  *                   type: string
  *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
  *                 user:
- *                   type:
- *                     $ref: '#/components/schemas/User'
+ *                   $ref: '#/components/schemas/User'
  *       500:
  *         description: Server error
  */
 authRouter.post("/googleLogin", googleLogin);
 
+/**
+ * @swagger
+ * /auth/tokenLogin:
+ *   post:
+ *     summary: User Token login
+ *     description: Authenticate user from token and return user
+ *     security:
+ *         - bearerAuth: []
+ *     tags:
+ *       - Auth
+ *     responses:
+ *       200:
+ *         description: Successful Token login
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 accessToken:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 refreshToken:
+ *                   type: string
+ *                   example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+ *                 user:
+ *                   $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Invalid credentials or request
+ *       500:
+ *         description: Server error
+ */
 authRouter.get("/tokenLogin", tokenLogin);

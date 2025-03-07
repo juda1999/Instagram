@@ -23,6 +23,12 @@ db.on('error', (err) => console.error(err));
 db.once('open', () => console.log('Connected to Mongo :)'));
 
 app.use(cors());
+app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*")
+  res.header("Access-Control-Allow-Headers", "*")
+  res.header("Access-Control-Allow-Methods", "*")
+  next()
+})
 app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
 app.use(bodyParser.json());
 
@@ -32,20 +38,22 @@ app.use('/comment', commentsRouter);
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 
-const options = {
-  definition: {
-    openapi: "3.0.0",
-    info: {
-      title: "Instagram REST API",
-      version: "1.0.0",
-      description: "Final Project",
+if (process.env.NODE_ENV === "Deployment") {
+  const options = {
+    definition: {
+      openapi: "3.0.0",
+      info: {
+        title: "Instagram REST API",
+        version: "1.0.0",
+        description: "Final Project",
+      },
+      servers: [{ url: "http://localhost:3001", },],
     },
-    servers: [{ url: "http://localhost:3000", },],
-  },
-  apis: ["./src/routes/*.ts"],
-};
-const specs = swaggerJsDoc(options);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+    apis: ["./src/routes/*.ts"],
+  };
+  const specs = swaggerJsDoc(options);
+  app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+}
 
 export const initApp = () => {
   return new Promise<Express>((resolve, reject) => {
@@ -66,15 +74,15 @@ export const initApp = () => {
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-      const uploadDir = 'uploads';
-      if (!fs.existsSync(uploadDir)) {
-          fs.mkdirSync(uploadDir, { recursive: true });
-      }
-      cb(null, uploadDir);
+    const uploadDir = 'uploads';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
-      const fileName = Date.now() + path.extname(file.originalname);
-      cb(null, fileName);
+    const fileName = Date.now() + path.extname(file.originalname);
+    cb(null, fileName);
   }
 });
 

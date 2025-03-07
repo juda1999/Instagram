@@ -1,7 +1,6 @@
-import React, { useContext, useEffect } from 'react';
+import React, { Fragment, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../App';
-import { Box } from '@mui/material';
 
 interface PrivateRouteProps {
   element: React.ReactNode;
@@ -19,5 +18,5 @@ export const PrivateRouteComponent: React.FC<PrivateRouteProps> = ({
     }
   }, [user]);
 
-  return <Box sx={{ marginTop: '16px' }}>{element}</Box>;
+  return <Fragment>{element}</Fragment>;
 };

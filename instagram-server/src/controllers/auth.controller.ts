@@ -7,24 +7,10 @@ import { OAuth2Client } from 'google-auth-library';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
+import { upload } from '../server';
 
+//move to secret
 const client = new OAuth2Client('552634801343-odnvmi18ds914j0hci9a6mhuqrbuvebk.apps.googleusercontent.com');
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        const uploadDir = 'uploads/profile_pictures';
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        const fileName = Date.now() + path.extname(file.originalname);
-        cb(null, fileName);
-    }
-});
-
-const upload = multer({ storage });
 
 export const register = async (req: Request, res: Response) => {
     const uploadMiddleware = upload.single('profilePicture');
@@ -35,7 +21,7 @@ export const register = async (req: Request, res: Response) => {
         }
 
         const { email, password, firstName, username, lastName } = req.body;
-        const profilePicturePath = req.file ? `/uploads/profile_pictures/${req.file.filename}` : undefined;
+        const profilePicturePath = req.file ? `/uploads/${req.file.filename}` : undefined;
 
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(password, salt);

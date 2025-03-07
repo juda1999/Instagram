@@ -33,7 +33,7 @@ export const SignUp: React.FC = () => {
     }),
     []
   );
-  const { action: signUp } = useRequestAction('auth/register', options, false);
+  const { action: signUp } = useRequestAction('auth/register', options);
 
   const handleProfilePictureChange = (
     e: React.ChangeEvent<HTMLInputElement>

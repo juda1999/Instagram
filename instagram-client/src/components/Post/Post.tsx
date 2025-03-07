@@ -153,39 +153,26 @@ export const Post: React.FC<PostProps> = ({
         )}
       </Stack>
 
-      <CardMedia
-        component="img"
-        height="200"
-        image={getImageRequestPath(post.photo)}
-        alt="Post Image"
-        sx={{ objectFit: 'cover' }}
-      />
+      {(imagePreview || savedPost?.photo) && (
+        <CardMedia
+          alt="e"
+          component="img"
+          image={
+            editEnabled
+              ? (imagePreview ?? getImageRequestPath(savedPost?.photo))
+              : getImageRequestPath(savedPost?.photo)
+          }
+          sx={{
+            width: '100%',
+            maxHeight: 200,
+            objectFit: 'cover',
+          }}
+        />
+      )}
 
       <CardContent>
         {isEditMode ? (
           <>
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="Title"
-              value={editedPost.title}
-              onChange={(e) =>
-                setEditedPost({ ...editedPost, title: e.target.value })
-              }
-              sx={{ marginBottom: 1 }}
-            />
-            <TextField
-              fullWidth
-              variant="outlined"
-              label="Description"
-              value={editedPost.description}
-              onChange={(e) =>
-                setEditedPost({ ...editedPost, description: e.target.value })
-              }
-              sx={{ marginBottom: 1 }}
-              multiline
-              rows={1}
-            />
             <Stack direction="column" spacing={1}>
               <label htmlFor="image">
                 <Button
@@ -213,20 +200,30 @@ export const Post: React.FC<PostProps> = ({
                 }}
                 style={{ display: 'none' }}
               />
-              {imagePreview && (
-                <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-                  <CardMedia
-                    component="img"
-                    image={imagePreview}
-                    sx={{
-                      width: '100%',
-                      maxHeight: 200,
-                      objectFit: 'cover',
-                    }}
-                  />
-                </Box>
-              )}
             </Stack>
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Title"
+              value={editedPost.title}
+              onChange={(e) =>
+                setEditedPost({ ...editedPost, title: e.target.value })
+              }
+              sx={{ marginBottom: 1 }}
+            />
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Description"
+              value={editedPost.description}
+              onChange={(e) =>
+                setEditedPost({ ...editedPost, description: e.target.value })
+              }
+              sx={{ marginBottom: 1 }}
+              multiline
+              rows={1}
+            />
+
             <Stack direction="row" justifyContent="space-between">
               <Button
                 sx={{ textTransform: 'none' }}

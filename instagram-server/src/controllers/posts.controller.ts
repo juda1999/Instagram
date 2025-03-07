@@ -6,23 +6,9 @@ import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
 import OpenAI from "openai";
+import { upload } from "../server";
 
 const openai = new OpenAI({ baseURL: "https://api.aimlapi.com", apiKey: 'e4db56dcc09e4e5e88b5a60b4f62915c' });
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadDir = 'uploads';
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
-    }
-    cb(null, uploadDir);
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
-});
-
-const upload = multer({ storage });
 
 class PostsController extends BaseController<Post> {
   constructor() {
@@ -31,6 +17,7 @@ class PostsController extends BaseController<Post> {
 
   async getPagedPosts(req: Request, res: Response) {
     const filterByUploader = req.query.uploader;
+    const filterByIds = req.body.filterIds;
     const skip = parseInt(req.body.skip) || 0;
     const limit = parseInt(req.body.limit) || 10;
 
@@ -38,6 +25,10 @@ class PostsController extends BaseController<Post> {
       let posts;
       if (filterByUploader) {
         posts = await this.model.find({ 'uploadedBy': filterByUploader }).skip(skip).limit(limit);
+      } else if(filterByIds) {
+        posts = await this.model.find({
+          '_id': filterByIds
+         }).skip(skip).limit(limit);
       } else {
         posts = await this.model.find().skip(skip).limit(limit);
       }
@@ -54,23 +45,20 @@ class PostsController extends BaseController<Post> {
       return
     }
 
-    console.log(req.body)
-
     try {
       const completion = await openai.chat.completions.create({
         model: "gpt-4o-mini",
         messages: [
           {
             role: "user",
-            content: `Summarize this text: ${text}`,
+            content: `I am writing a post description.make this sound the best. send back the new text without any additions: "${text}"`,
           },
         ],
         max_tokens: 256,
         temperature: 0.7
       });
 
-      console.log(completion)
-      res.status(200).send("");
+      res.status(200).send(completion.choices[0].message.content);
     } catch (error) {
       console.error(error)
       res.status(500).send(error)

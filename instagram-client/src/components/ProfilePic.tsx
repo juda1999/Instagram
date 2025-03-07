@@ -15,7 +15,7 @@ export const ProfilePic: React.FC<ProfilePicProps> = ({
 }) => {
   return (
     <IconButton disableRipple onClick={onClick}>
-      <Avatar alt={name ?? 'User'} src={getImageRequestPath(path)} />
+      <Avatar key={path} alt={name ?? 'User'} src={getImageRequestPath(path)} />
     </IconButton>
   );
 };

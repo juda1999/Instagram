@@ -61,4 +61,4 @@ export const userRouter = Router();
  *           description: Post not found
  */
 userRouter.get('/userInfo/:id', authMiddleware, userController.getItemById.bind(userController));
-userRouter.post('/update/:id', authMiddleware, userController.updateItem.bind(userController));
+userRouter.post('/update/:id', authMiddleware, userController.updateUser.bind(userController));

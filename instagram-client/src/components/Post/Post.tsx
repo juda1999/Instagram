@@ -9,7 +9,6 @@ import {
   Stack,
   IconButton,
   TextField,
-  FormLabel,
   Box,
 } from '@mui/material';
 import { Delete, Edit, Favorite, FavoriteBorder } from '@mui/icons-material';
@@ -19,22 +18,24 @@ import { CommentsDialog } from '../CommentDialog/CommentDialog';
 import { useRequestAction } from '../../hooks';
 import _ from 'lodash';
 import { ProfilePic } from '../ProfilePic';
-import { HomeContext } from '../Home';
 import { getImageRequestPath } from '../../api';
+import { useNavigate } from 'react-router-dom';
 
 interface PostProps {
   post: PostInterface;
   editEnabled?: boolean;
   deletePost?: () => void;
+  onEditPost: (post: PostInterface) => void;
 }
 
 export const Post: React.FC<PostProps> = ({
   deletePost,
   post,
+  onEditPost,
   editEnabled = false,
 }) => {
   const { user, setUser } = useContext(AppContext);
-  const { setUserDetailsId } = useContext(HomeContext);
+  const navigate = useNavigate();
   const options = useMemo(() => ({ method: 'get' }), []);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
@@ -93,7 +94,7 @@ export const Post: React.FC<PostProps> = ({
 
   async function handleSaveEdit() {
     const formData = new FormData();
-    formData.append('id', editedPost._id);
+    formData.append('_id', editedPost._id);
     formData.append('image', image);
     formData.append('content', editedPost.description);
     formData.append('title', editedPost.title);
@@ -102,6 +103,7 @@ export const Post: React.FC<PostProps> = ({
     const response = await updatePostAction(formData);
     setSavedPost(response.data);
     setIsEditMode(false);
+    onEditPost(response.data);
   }
 
   async function handleDeletePost() {
@@ -128,7 +130,8 @@ export const Post: React.FC<PostProps> = ({
       >
         <ProfilePic
           path={postUserData?.profilePicture}
-          onClick={() => setUserDetailsId(postUserData?._id)}
+          name={postUserData?.firstName}
+          onClick={() => navigate(`/user/${postUserData._id}`)}
         />
         <Typography sx={{ flex: 1 }} color="text.secondary">
           {postUserData?.username}
@@ -265,15 +268,13 @@ export const Post: React.FC<PostProps> = ({
 
             <Stack direction="row" justifyContent="space-between">
               <Box>
-                {comments?.length > 0 && (
-                  <Button
-                    onClick={() => setCommentModalOpen(true)}
-                    sx={{ height: '30px', textTransform: 'none' }}
-                    variant="outlined"
-                  >
-                    <Typography variant="body2">View Comments</Typography>
-                  </Button>
-                )}
+                <Button
+                  onClick={() => setCommentModalOpen(true)}
+                  sx={{ height: '30px', textTransform: 'none' }}
+                  variant="outlined"
+                >
+                  <Typography variant="body2">Comments</Typography>
+                </Button>
               </Box>
               <IconButton onClick={handleLiked}>
                 {user.likedPosts.includes(savedPost?._id) ? (
@@ -292,8 +293,10 @@ export const Post: React.FC<PostProps> = ({
         onClose={() => setCommentModalOpen(false)}
       >
         <CommentsDialog
-          onClose={() => {
+          onSubmit={() => {
             refetch();
+          }}
+          onClose={() => {
             setCommentModalOpen(false);
           }}
           postId={savedPost?._id}

@@ -4,13 +4,18 @@ import { getImageRequestPath } from '../api';
 
 type ProfilePicProps = {
   path: string;
+  name?: string;
   onClick?: () => void;
 };
 
-export const ProfilePic: React.FC<ProfilePicProps> = ({ onClick, path }) => {
+export const ProfilePic: React.FC<ProfilePicProps> = ({
+  name,
+  onClick,
+  path,
+}) => {
   return (
-    <IconButton disableRipple onClick={onClick} sx={{ p: 0 }}>
-      <Avatar alt="User" src={getImageRequestPath(path)} />
+    <IconButton disableRipple onClick={onClick}>
+      <Avatar alt={name ?? 'User'} src={getImageRequestPath(path)} />
     </IconButton>
   );
 };

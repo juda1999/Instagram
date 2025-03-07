@@ -15,7 +15,7 @@ import {
 import axios from 'axios';
 
 export const SignIn: React.FC = () => {
-  const { setUser } = useContext(AppContext);
+  const { setUser, setNavbarItems } = useContext(AppContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -27,6 +27,8 @@ export const SignIn: React.FC = () => {
     'auth/googleLogin',
     options
   );
+
+  useEffect(() => setNavbarItems(null), []);
 
   async function handleOnLoad() {
     const token = localStorage.getItem('accessToken');

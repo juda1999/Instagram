@@ -17,6 +17,7 @@ import { Close } from '@mui/icons-material';
 
 type CommentsDialogProps = {
   comments: Comment[];
+  onSubmit: () => void;
   postId: string;
   onClose: () => void;
 };
@@ -25,6 +26,7 @@ export const CommentsDialog: React.FC<CommentsDialogProps> = ({
   onClose,
   comments,
   postId,
+  onSubmit,
 }) => {
   const { user } = useContext(AppContext);
   const [newComment, setNewComment] = useState('');
@@ -44,7 +46,8 @@ export const CommentsDialog: React.FC<CommentsDialogProps> = ({
       uploadedAt: new Date(),
     });
 
-    onClose();
+    setNewComment('');
+    onSubmit();
   }
 
   return (

@@ -2,7 +2,7 @@ import mongoose, { Types } from "mongoose";
 import { User } from "./user";
 
 export interface Post {
-    photo: string;
+    photo?: string;
     title: string;
     uploadedBy: User;
     description: string;

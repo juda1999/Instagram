@@ -1,15 +1,15 @@
-import React, { Fragment, useContext, useEffect } from 'react';
-import { Route } from 'react-router-dom';
+import React, { useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppContext } from '../App';
+import { Box } from '@mui/material';
 
 interface PrivateRouteProps {
   element: React.ReactNode;
 }
 
 export const PrivateRouteComponent: React.FC<PrivateRouteProps> = ({
-   element
-  }) => {
+  element,
+}) => {
   const { user } = useContext(AppContext);
   const navigate = useNavigate();
 
@@ -17,8 +17,7 @@ export const PrivateRouteComponent: React.FC<PrivateRouteProps> = ({
     if (!user) {
       navigate('/signIn');
     }
-  },
-    [user])
+  }, [user]);
 
-  return <Fragment>{element}</Fragment>;
+  return <Box sx={{ marginTop: '16px' }}>{element}</Box>;
 };

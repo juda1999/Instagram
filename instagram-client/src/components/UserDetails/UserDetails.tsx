@@ -14,21 +14,56 @@ import {
   Box,
   Stack,
   FormLabel,
+  Avatar,
 } from '@mui/material';
 import { useRequestAction } from '../../hooks';
-import { Close, Edit, PhotoCamera } from '@mui/icons-material';
-import { HomeContext } from '../Home';
+import { Edit, PhotoCamera } from '@mui/icons-material';
+import { useNavigate, useParams } from 'react-router-dom';
 
-interface UserDetailsProps {
-  userId: string;
-}
-
-export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
-  const { user, setUser } = useContext(AppContext);
-  const { setUserDetailsId } = useContext(HomeContext);
+export const UserDetails: React.FC = () => {
+  const { userId } = useParams();
+  const { user, setUser, setNavbarItems } = useContext(AppContext);
+  const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState<User>();
+  const [image, setImage] = useState<File>();
   const [editMode, setEditMode] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    setNavbarItems(
+      <Stack spacing={2} alignItems="center" direction="row">
+        <Button
+          sx={{
+            textTransform: 'none',
+            backgroundColor: 'aliceblue',
+            height: '50%',
+          }}
+          onClick={() => navigate('/')}
+        >
+          Posts
+        </Button>
+        <Button
+          sx={{
+            textTransform: 'none',
+            backgroundColor: 'aliceblue',
+            height: '50%',
+          }}
+          onClick={() => {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            navigate('/signIn');
+          }}
+        >
+          Logout
+        </Button>
+        <ProfilePic
+          name={user?.firstName}
+          path={user?.profilePicture}
+          onClick={() => navigate(`/user/${user._id}`)}
+        />
+      </Stack>
+    );
+  }, []);
 
   const options = useMemo(() => ({ method: 'get' }), []);
   const updateUserOptions = useMemo(() => ({ method: 'post' }), []);
@@ -46,7 +81,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files ? e.target.files[0] : null;
     if (file) {
-      setCurrentUser((prevUser) => ({ ...prevUser, profilePic: file }));
+      setImage(file);
     }
   };
 
@@ -58,9 +93,19 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
       return;
     }
 
+    const formData = new FormData();
+    formData.append('username', currentUser.username);
+    formData.append('email', currentUser.email);
+    formData.append('firstName', currentUser.firstName);
+    formData.append('lastName', currentUser.lastName);
+
+    if (image) {
+      formData.append('profilePicture', image);
+    }
+
     try {
-      await updateUserAction(currentUser);
-      setUser?.(currentUser);
+      const { data } = await updateUserAction(formData);
+      setUser?.(data);
       setEditMode(false);
     } catch (error) {
       setError('Failed to update user details');
@@ -71,14 +116,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
     <Card
       sx={{ maxHeight: '100%', overflow: 'scroll', backgroundColor: '#f0f4f8' }}
     >
-      <CardHeader
-        title={<Typography variant="h6">User Details</Typography>}
-        action={
-          <Button onClick={() => setUserDetailsId(undefined)}>
-            <Close />
-          </Button>
-        }
-      />
+      <CardHeader title={<Typography variant="h6">User Details</Typography>} />
 
       <Stack alignItems="center">
         <CardContent sx={{ width: '50%' }}>
@@ -87,7 +125,10 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
             direction="row"
             justifyContent="center"
           >
-            <ProfilePic path={currentUser?.profilePicture} />
+            <ProfilePic
+              name={currentUser?.firstName}
+              path={currentUser?.profilePicture}
+            />
             {userId === user?._id && (
               <Button
                 sx={{ right: 0, position: 'absolute' }}
@@ -141,18 +182,26 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
                 fullWidth
                 margin="normal"
               />
-              <Button
-                variant="contained"
-                component="label"
-                startIcon={<PhotoCamera />}
-              >
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  style={{ marginRight: '1rem' }}
-                />
-              </Button>
+              <Stack direction="row" spacing={5}>
+                <Button
+                  variant="contained"
+                  component="label"
+                  startIcon={<PhotoCamera />}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ marginRight: '1rem' }}
+                  />
+                </Button>
+                {image && (
+                  <Avatar
+                    src={URL.createObjectURL(image)}
+                    sx={{ width: 50, height: 50, marginTop: 2 }}
+                  />
+                )}
+              </Stack>
             </>
           ) : (
             <Box marginTop="1rem">
@@ -190,6 +239,7 @@ export const UserDetails: React.FC<UserDetailsProps> = ({ userId }) => {
               >
                 cancel
               </Button>
+              {error ?? <Typography sx={{ color: 'red' }}>{error}</Typography>}
             </Stack>
           )}
         </CardActions>

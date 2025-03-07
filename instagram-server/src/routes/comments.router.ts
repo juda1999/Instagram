@@ -5,11 +5,11 @@ import { authMiddleware } from '../controllers/auth.controller';
 export const commentsRouter = Router();
 
 /**
-* @swagger
-* tags:
-*   name: Comment
-*   description: The Comments API
-*/
+ * @swagger
+ * tags:
+ *   name: Comment
+ *   description: The Comments API
+ */
 
 /**
  * @swagger
@@ -22,6 +22,9 @@ export const commentsRouter = Router();
  *         - post
  *         - uploadedBy
  *       properties:
+ *         _id:
+ *           type: string
+ *           description: The unique ID of the comment
  *         message:
  *           type: string
  *           description: The content of the comment
@@ -32,6 +35,7 @@ export const commentsRouter = Router();
  *           type: string
  *           description: The ID of the user who uploaded the comment
  *       example:
+ *         _id: "6766c5b3a19e2f4d9c4f9b32"
  *         message: "Test Comment"
  *         post: "6766ba578512b96e0948f8f3"
  *         uploadedBy: "6766b07ed176ee0ca0ea6105"
@@ -75,37 +79,11 @@ export const commentsRouter = Router();
  *             application/json:
  *               schema:
  *                 $ref: '#/components/schemas/Comment'
+ *         400:
+ *           description: Invalid request body
  *         401:
  *           description: Unauthorized
- *   /comment/update/{id}:
- *     put:
- *       summary: Updates a comment
- *       tags: [Comment]
- *       security:
- *         - bearerAuth: []
- *       description: updates a specific comment with new values
- *       parameters:
- *         - in: path
- *           name: id
- *           required: true
- *           description: The ID of the comment to update
- *           schema:
- *             type: string
- *       requestBody:
- *         required: true
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Comment'
- *       responses:
- *         200:
- *           description: updated comment
- *           content:
- *             application/json:
- *               schema:
- *                 $ref: '#/components/schemas/Comment'
- *         404:
- *           description: Comment not found
+
  *   /comment/{id}:
  *     get:
  *       summary: Get a specific comment by ID
@@ -129,9 +107,38 @@ export const commentsRouter = Router();
  *                 $ref: '#/components/schemas/Comment'
  *         404:
  *           description: Comment not found
- *   /comment/delete/{id}:
+ *     put:
+ *       summary: Update a comment
+ *       tags: [Comment]
+ *       security:
+ *         - bearerAuth: []
+ *       description: Updates a specific comment with new values
+ *       parameters:
+ *         - in: path
+ *           name: id
+ *           required: true
+ *           description: The ID of the comment to update
+ *           schema:
+ *             type: string
+ *       requestBody:
+ *         required: true
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Comment'
+ *       responses:
+ *         200:
+ *           description: Updated comment
+ *           content:
+ *             application/json:
+ *               schema:
+ *                 $ref: '#/components/schemas/Comment'
+ *         400:
+ *           description: Invalid request data
+ *         404:
+ *           description: Comment not found
  *     delete:
- *       summary: Delete a specific comment
+ *       summary: Delete a comment
  *       tags: [Comment]
  *       description: Deletes a comment by its ID
  *       security:
@@ -148,7 +155,8 @@ export const commentsRouter = Router();
  *           description: Comment deleted successfully
  *         404:
  *           description: Comment not found
- *   /comment/uploader?uploader={uploaderId}:
+
+ *   /comment/uploader:
  *     get:
  *       summary: Get comments by uploader
  *       tags: [Comment]
@@ -157,7 +165,7 @@ export const commentsRouter = Router();
  *       description: Returns a list of comments uploaded by a specific user
  *       parameters:
  *         - in: query
- *           name: uploader
+ *           name: uploaderId
  *           required: true
  *           description: The ID of the user who uploaded the comments
  *           schema:
@@ -171,25 +179,28 @@ export const commentsRouter = Router();
  *                 type: array
  *                 items:
  *                   $ref: '#/components/schemas/Comment'
+ *         400:
+ *           description: Missing uploaderId query parameter
  *         404:
  *           description: No comments found for the given uploader
+
  *   /comment/postId/{postId}:
  *     get:
- *       summary: Get comments by post
+ *       summary: Get comments by post ID
  *       tags: [Comment]
  *       security:
  *         - bearerAuth: []
- *       description: Returns a list of comments uploaded on a specific post
+ *       description: Returns a list of comments associated with a specific post
  *       parameters:
  *         - in: path
- *           name: id
+ *           name: postId
  *           required: true
- *           description: The ID of the post to retrieve the comments
+ *           description: The ID of the post to retrieve comments for
  *           schema:
  *             type: string
  *       responses:
  *         200:
- *           description: A list of comments uploaded on a specific post
+ *           description: A list of comments for the specified post
  *           content:
  *             application/json:
  *               schema:

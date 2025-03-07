@@ -5,6 +5,13 @@ import { userController } from "../controllers/user.controller";
 export const userRouter = Router();
 
 /**
+* @swagger
+* tags:
+*   name: User
+*   description: The User API
+*/
+
+/**
  * @swagger
  * paths:
  *   /user/userInfo/{id}:
@@ -13,7 +20,7 @@ export const userRouter = Router();
  *       security:
  *         - bearerAuth: []
  *       description: Retrieve a specific user by its ID
- *       tags: [Post]
+ *       tags: [User]
  *       parameters:
  *         - in: path
  *           name: id
@@ -29,14 +36,14 @@ export const userRouter = Router();
  *               schema:
  *                 $ref: '#/components/schemas/User'
  *         404:
- *           description: Post not found
+ *           description: User not found
  *   /user/update/{id}:
  *     post:
  *       summary: Get a user by ID
  *       security:
  *         - bearerAuth: []
  *       description: updates a user by its ID
- *       tags: [Post]
+ *       tags: [User]
  *       parameters:
  *         - in: path
  *           name: id
@@ -58,7 +65,7 @@ export const userRouter = Router();
  *               schema:
  *                 $ref: '#/components/schemas/User'
  *         404:
- *           description: Post not found
+ *           description: User not found
  */
 userRouter.get('/userInfo/:id', authMiddleware, userController.getItemById.bind(userController));
 userRouter.post('/update/:id', authMiddleware, userController.updateUser.bind(userController));

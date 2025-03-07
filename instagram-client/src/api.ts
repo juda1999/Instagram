@@ -5,7 +5,7 @@ export function getImageRequestPath(path) {
 }
 
 const api = axios.create({
-  baseURL: 'http://localhost:/3001',
+  baseURL: 'http://localhost:3001/',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -14,7 +14,13 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
+
+    if (
+      accessToken &&
+      !config.url.includes('/register') &&
+      !config.url.includes('/login') &&
+      !config.url.includes('/googleLogin')
+    ) {
       config.headers['Authorization'] = accessToken;
     }
     return config;

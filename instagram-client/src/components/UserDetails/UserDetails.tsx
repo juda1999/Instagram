@@ -120,7 +120,7 @@ export const UserDetails: React.FC = () => {
   };
 
   return (
-    <Stack sx={{ backgroundColor: '#f0f4f8' }}>
+    <Stack sx={{ backgroundColor: '#f0f4f8', minHeight: 'calc(100vh - 64px)' }}>
       <CardHeader title={<Typography variant="h6">User Details</Typography>} />
 
       <Stack alignItems="center">
@@ -189,18 +189,23 @@ export const UserDetails: React.FC = () => {
                 margin="normal"
               />
               <Stack direction="row" spacing={5}>
-                <Button
-                  variant="contained"
-                  component="label"
-                  startIcon={<PhotoCamera />}
-                >
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileChange}
-                    style={{ marginRight: '1rem' }}
-                  />
-                </Button>
+                <label htmlFor="image">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    fullWidth
+                    sx={{ textTransform: 'none', textAlign: 'left' }}
+                  >
+                    Choose Image
+                  </Button>
+                </label>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
                 {image && (
                   <Avatar
                     src={URL.createObjectURL(image)}

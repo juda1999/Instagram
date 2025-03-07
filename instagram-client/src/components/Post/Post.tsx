@@ -153,8 +153,9 @@ export const Post: React.FC<PostProps> = ({
         )}
       </Stack>
 
-      <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+      {(imagePreview || savedPost?.photo) && (
         <CardMedia
+          alt="e"
           component="img"
           image={
             editEnabled
@@ -167,7 +168,7 @@ export const Post: React.FC<PostProps> = ({
             objectFit: 'cover',
           }}
         />
-      </Box>
+      )}
 
       <CardContent>
         {isEditMode ? (

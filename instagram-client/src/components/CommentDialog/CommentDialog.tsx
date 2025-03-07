@@ -12,7 +12,6 @@ import React, { useContext, useMemo, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
 import { AppContext, Comment } from '../../App';
 import { useRequestAction } from '../../hooks/useRequestAction';
-import { AxiosRequestConfig } from 'axios';
 import { Close } from '@mui/icons-material';
 
 type CommentsDialogProps = {
@@ -31,7 +30,7 @@ export const CommentsDialog: React.FC<CommentsDialogProps> = ({
   const { user } = useContext(AppContext);
   const [newComment, setNewComment] = useState('');
   const options = useMemo(
-    (): AxiosRequestConfig => ({
+    () => ({
       method: 'Post',
     }),
     []
@@ -64,8 +63,8 @@ export const CommentsDialog: React.FC<CommentsDialogProps> = ({
           </Button>
         </Stack>
       </DialogTitle>
-      <DialogContent>
-        <Box sx={{ maxHeight: 400, overflowY: 'auto', mb: 2 }}>
+      <DialogContent sx={{ height: '500px', width: '500px' }}>
+        <Box>
           {comments?.length > 0 ? (
             comments.map((comment, index) => (
               <Box key={index} sx={{ marginBottom: 1 }}>

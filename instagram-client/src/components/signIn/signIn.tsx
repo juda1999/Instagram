@@ -22,10 +22,16 @@ export const SignIn: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const options = useMemo(() => ({ method: 'post' }), []);
+  const googleLoginOptions = useMemo(() => ({ method: 'post' }), []);
   const { action: googleLoginRequest } = useRequestAction(
     'auth/googleLogin',
-    options
+    googleLoginOptions
+  );
+
+  const tokenLoginOptions = useMemo(() => ({ method: 'get' }), []);
+  const { action: tokenLogin } = useRequestAction(
+    'auth/tokenLogin',
+    tokenLoginOptions
   );
 
   useEffect(() => setNavbarItems(null), []);
@@ -34,10 +40,7 @@ export const SignIn: React.FC = () => {
     const token = localStorage.getItem('accessToken');
     if (token) {
       try {
-        const response = await axios.get<UserResponse>(
-          'http://localhost:3001/auth/tokenLogin',
-          { headers: { Authorization: token } }
-        );
+        const response = await tokenLogin();
         if (response.data.user) {
           handleSuccessLogin(response.data);
         }

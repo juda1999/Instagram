@@ -14,8 +14,6 @@ import {
   CardMedia,
 } from '@mui/material';
 import { useRequestAction } from '../../hooks';
-import { head, method } from 'lodash';
-import api from '../../api';
 
 export const CreatePost = () => {
   const { setNavbarItems, user } = useContext(AppContext);
@@ -34,10 +32,8 @@ export const CreatePost = () => {
     []
   );
 
-  const { action: summarizeRequest } = useRequestAction(
-    'post/summarize',
-    summarizeRequestOptions
-  );
+  const { action: summarizeRequest, loading: summarizeLoading } =
+    useRequestAction('post/summarize', summarizeRequestOptions);
 
   const createPostOptions = useMemo(
     () => ({
@@ -70,8 +66,12 @@ export const CreatePost = () => {
   }, []);
 
   async function handleSummarize() {
-    const response = await summarizeRequest({ text: content });
-    console.log(response);
+    try {
+      const { data } = await summarizeRequest({ text: content });
+      setContent(data);
+    } catch (error) {
+      setError('Failed request to Ai');
+    }
   }
 
   const handleImageChange = (e) => {
@@ -187,7 +187,10 @@ export const CreatePost = () => {
             sx={{ textTransform: 'none' }}
             onClick={() => handleSummarize()}
           >
-            Summarize Using Ai
+            <Typography sx={{ marginRight: '16px' }}>
+              Make Better Using Ai
+            </Typography>
+            {summarizeLoading && <CircularProgress size="16px" />}
           </Button>
 
           <Button

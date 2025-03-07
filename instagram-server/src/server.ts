@@ -10,6 +10,9 @@ import swaggerUI from "swagger-ui-express";
 import cors from "cors"
 import { userRouter } from "./routes/user.router";
 import { imagesRouter } from "./routes/images.router";
+import multer from "multer";
+import fs from "fs"
+import path from "path";
 
 export const app = express();
 dotenv.config();
@@ -60,3 +63,19 @@ export const initApp = () => {
     }
   });
 };
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+      const uploadDir = 'uploads';
+      if (!fs.existsSync(uploadDir)) {
+          fs.mkdirSync(uploadDir, { recursive: true });
+      }
+      cb(null, uploadDir);
+  },
+  filename: (req, file, cb) => {
+      const fileName = Date.now() + path.extname(file.originalname);
+      cb(null, fileName);
+  }
+});
+
+export const upload = multer({ storage });

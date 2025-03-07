@@ -6,7 +6,6 @@ import { ProfilePic } from '../ProfilePic';
 import {
   TextField,
   Button,
-  Card,
   CardContent,
   CardHeader,
   CardActions,
@@ -28,7 +27,6 @@ export const UserDetails: React.FC = () => {
   const [image, setImage] = useState<File>();
   const [editMode, setEditMode] = useState(false);
   const [error, setError] = useState('');
-
   useEffect(() => {
     setNavbarItems(
       <Stack spacing={2} alignItems="center" direction="row">
@@ -63,10 +61,18 @@ export const UserDetails: React.FC = () => {
         />
       </Stack>
     );
-  }, []);
+  }, [user]);
 
   const options = useMemo(() => ({ method: 'get' }), []);
-  const updateUserOptions = useMemo(() => ({ method: 'post' }), []);
+  const updateUserOptions = useMemo(
+    () => ({
+      method: 'post',
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }),
+    []
+  );
   const { data: userInfo } = useRequest<User>(
     `user/userInfo/${userId}`,
     options
@@ -106,6 +112,7 @@ export const UserDetails: React.FC = () => {
     try {
       const { data } = await updateUserAction(formData);
       setUser?.(data);
+      setCurrentUser?.(data);
       setEditMode(false);
     } catch (error) {
       setError('Failed to update user details');
@@ -113,9 +120,7 @@ export const UserDetails: React.FC = () => {
   };
 
   return (
-    <Card
-      sx={{ maxHeight: '100%', overflow: 'scroll', backgroundColor: '#f0f4f8' }}
-    >
+    <Stack sx={{ backgroundColor: '#f0f4f8' }}>
       <CardHeader title={<Typography variant="h6">User Details</Typography>} />
 
       <Stack alignItems="center">
@@ -126,6 +131,7 @@ export const UserDetails: React.FC = () => {
             justifyContent="center"
           >
             <ProfilePic
+              key={currentUser?.profilePicture}
               name={currentUser?.firstName}
               path={currentUser?.profilePicture}
             />
@@ -245,9 +251,12 @@ export const UserDetails: React.FC = () => {
         </CardActions>
 
         <CardContent sx={{ overflow: 'hidden', maxHeight: '100%' }}>
-          <PostList userId={userId} />
+          <PostList
+            key={`${user?.profilePicture}${user?.username}`}
+            userId={userId}
+          />
         </CardContent>
       </Stack>
-    </Card>
+    </Stack>
   );
 };

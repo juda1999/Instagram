@@ -19,5 +19,5 @@ export const PrivateRouteComponent: React.FC<PrivateRouteProps> = ({
     }
   }, [user]);
 
-  return <Box sx={{ marginTop: '16px' }}>{element}</Box>;
+  return <Box>{element}</Box>;
 };

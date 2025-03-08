@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler } from 'react-hook-form';
-import { AppContext } from '../../App';
+import { AppContext } from '../App';
 import {
   Button,
   Stack,
@@ -12,7 +12,7 @@ import {
   FormLabel,
   CardMedia,
 } from '@mui/material';
-import { useRequestAction } from '../../hooks';
+import { useRequestAction } from '../hooks';
 
 interface PostFormData {
   title: string;

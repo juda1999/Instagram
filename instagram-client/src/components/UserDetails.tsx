@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { AppContext, User } from '../../App';
-import { useRequest } from '../../hooks/useRequest';
-import { PostList } from '../PostList';
-import { ProfilePic } from '../ProfilePic';
+import { AppContext, User } from '../App';
+import { useRequest, useRequestAction } from '../hooks';
+import { PostList } from './PostList';
+import { ProfilePic } from './ProfilePic';
 import {
   TextField,
   Button,
@@ -15,7 +15,6 @@ import {
   FormLabel,
   Avatar,
 } from '@mui/material';
-import { useRequestAction } from '../../hooks';
 import { Edit } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 
@@ -55,7 +54,7 @@ export const UserDetails: React.FC = () => {
           Logout
         </Button>
         <ProfilePic
-          name={user?.firstName}
+          firstName={user?.firstName}
           path={user?.profilePicture}
           onClick={() => navigate(`/user/${user._id}`)}
         />
@@ -135,7 +134,7 @@ export const UserDetails: React.FC = () => {
             ) : (
               <ProfilePic
                 key={currentUser?.profilePicture}
-                name={currentUser?.firstName}
+                firstName={currentUser?.firstName}
                 path={currentUser?.profilePicture}
               />
             )}

@@ -1,11 +1,10 @@
 import React, { useContext, useEffect } from 'react';
-import { PostList } from '../PostList';
+import { PostList } from './PostList';
 import { Button, Stack } from '@mui/material';
 import _ from 'lodash';
-import { AppContext } from '../../App';
+import { AppContext } from '../App';
 import { useNavigate } from 'react-router-dom';
-import './Home.css';
-import { ProfilePic } from '../ProfilePic';
+import { ProfilePic } from './ProfilePic';
 
 export function Home() {
   const { setNavbarItems, user } = useContext(AppContext);
@@ -41,7 +40,7 @@ export function Home() {
           Logout
         </Button>
         <ProfilePic
-          name={user?.firstName}
+          firstName={user?.firstName}
           path={user?.profilePicture}
           onClick={() => navigate(`/user/${user._id}`)}
         />

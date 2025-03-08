@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import './SignIn.css';
 import { AppContext, User } from '../../App';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
@@ -8,32 +9,33 @@ import {
   Button,
   TextField,
   Typography,
-  Box,
   CircularProgress,
-  Grid2,
   Stack,
 } from '@mui/material';
-import api from '../../api';
 
 export const SignIn: React.FC = () => {
   const { setUser, setNavbarItems } = useContext(AppContext);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({ mode: 'onTouched' });
 
-  const googleLoginOptions = useMemo(() => ({ method: 'post' }), []);
+  const postRequestOptions = useMemo(() => ({ method: 'post' }), []);
   const { action: googleLoginRequest } = useRequestAction(
     'auth/googleLogin',
-    googleLoginOptions
+    postRequestOptions
   );
 
-  const tokenLoginOptions = useMemo(() => ({ method: 'get' }), []);
-  const { action: tokenLogin } = useRequestAction(
-    'auth/tokenLogin',
-    tokenLoginOptions
+  const { action: loginRequest } = useRequestAction(
+    'auth/login',
+    postRequestOptions
   );
+
+  const { action: tokenLogin } = useRequestAction('auth/tokenLogin');
 
   async function handleOnLoad() {
     const token = localStorage.getItem('accessToken');
@@ -61,18 +63,10 @@ export const SignIn: React.FC = () => {
     setNavbarItems(null);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) {
-      setError('Both fields are required');
-      return;
-    }
-
+  const onSubmit = async (data: { email: string; password: string }) => {
     setLoading(true);
     try {
-      const response = await api.request<UserResponse>({
-        data: { email, password },
-      });
+      const response = await loginRequest(data);
       handleSuccessLogin(response.data);
     } catch (err) {
       setError('Invalid credentials. Please try again.');
@@ -85,7 +79,6 @@ export const SignIn: React.FC = () => {
     const { credential } = response;
     try {
       setLoading(true);
-
       const response = await googleLoginRequest({ googleToken: credential });
       handleSuccessLogin(response.data);
     } catch {
@@ -109,44 +102,38 @@ export const SignIn: React.FC = () => {
           {error}
         </Typography>
       )}
-      <form className="sign-in-form" onSubmit={handleSubmit}>
-        <Grid2 container spacing={2}>
-          <Grid2 size={12}>
-            <TextField
-              label="Email"
-              type="email"
-              fullWidth
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </Grid2>
-          <Grid2 size={12}>
-            <TextField
-              label="Password"
-              type="password"
-              fullWidth
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </Grid2>
-          <Grid2 size={12}>
-            <Button
-              variant="contained"
-              color="primary"
-              type="submit"
-              fullWidth
-              disabled={loading}
-            >
-              {loading ? (
-                <CircularProgress size={24} color="inherit" />
-              ) : (
-                'Sign In'
-              )}
-            </Button>
-          </Grid2>
-        </Grid2>
+      <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
+        <Stack spacing={2}>
+          <TextField
+            label="Email"
+            type="email"
+            fullWidth
+            {...register('email', { required: 'Email is required' })}
+            error={!!errors.email}
+            helperText={errors.email?.message as string}
+          />
+          <TextField
+            label="Password"
+            type="password"
+            fullWidth
+            {...register('password', { required: 'Password is required' })}
+            error={!!errors.password}
+            helperText={errors.password?.message as string}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            type="submit"
+            fullWidth
+            disabled={loading}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="inherit" />
+            ) : (
+              'Sign In'
+            )}
+          </Button>
+        </Stack>
       </form>
       <GoogleLogin
         onSuccess={handleGoogleLoginSuccess}

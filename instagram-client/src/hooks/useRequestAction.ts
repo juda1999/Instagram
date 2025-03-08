@@ -4,7 +4,7 @@ import api from '../api';
 
 export const useRequestAction = <T = any>(
   url: string,
-  options: AxiosRequestConfig
+  options?: AxiosRequestConfig
 ): { action: (data?: T) => Promise<any>; loading: boolean; error?: string } => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -15,9 +15,8 @@ export const useRequestAction = <T = any>(
     try {
       return await api.request({
         url,
-        method: options.method ?? 'get',
-        ...options,
         data,
+        ...options,
       });
     } catch (err) {
       setError(err.message || 'Something went wrong');

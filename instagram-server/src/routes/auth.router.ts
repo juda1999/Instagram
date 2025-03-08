@@ -135,34 +135,6 @@ authRouter.post("/refresh", refresh);
 
 /**
  * @swagger
- * /auth/logout:
- *   post:
- *     summary: User logout
- *     description: Logout user and invalidate the refresh token
- *     tags:
- *       - Auth
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               refreshToken:
- *                 type: string
- *                 example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
- *     responses:
- *       200:
- *         description: Successful logout
- *       400:
- *         description: Invalid refresh token
- *       500:
- *         description: Server error
- */
-authRouter.post("/logout", logout);
-
-/**
- * @swagger
  * /auth/googleLogin:
  *   post:
  *     summary: User login with google cloud

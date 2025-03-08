@@ -77,7 +77,6 @@ class PostsController extends BaseController<Post> {
         const { title, content, uploadedBy, _id } = req.body;
 
         const imagePath = req.file ? `/uploads/${req.file.filename}` : undefined;
-        const filter = _id ? { _id } : {};
         let savedPost;
         if (!_id) {
           savedPost = await this.model.create(

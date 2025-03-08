@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useForm, SubmitHandler } from 'react-hook-form';
 import { AppContext } from '../../App';
 import {
   Button,
@@ -13,15 +14,31 @@ import {
 } from '@mui/material';
 import { useRequestAction } from '../../hooks';
 
+interface PostFormData {
+  title: string;
+  image: FileList;
+  description: string;
+}
+
 export const CreatePost = () => {
   const { setNavbarItems, user } = useContext(AppContext);
-  const [title, setTitle] = useState('');
-  const [image, setImage] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
-  const [description, setDescription] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<PostFormData>({ mode: 'onTouched' });
+
+  const [error, setError] = useState('');
+  const options = useMemo(
+    () => ({
+      method: 'post',
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }),
+    []
+  );
 
   const summarizeRequestOptions = useMemo(
     () => ({
@@ -30,23 +47,53 @@ export const CreatePost = () => {
     []
   );
 
+  const { action: createPost, loading } = useRequestAction(
+    'post/create',
+    options
+  );
   const { action: summarizeRequest, loading: summarizeLoading } =
     useRequestAction('post/summarize', summarizeRequestOptions);
 
-  const createPostOptions = useMemo(
-    () => ({
-      method: 'post',
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    }),
-    []
-  );
+  const image = watch('image');
+  const description = watch('description');
 
-  const { action: createPost } = useRequestAction(
-    'post/create',
-    createPostOptions
-  );
+  async function handleSummarize() {
+    try {
+      const { data } = await summarizeRequest({ text: description });
+      setValue('description', data);
+    } catch (error) {
+      setError('Failed request to AI');
+    }
+  }
+
+  const onSubmit: SubmitHandler<PostFormData> = async (data) => {
+    const formData = new FormData();
+
+    if (!data.image?.[0]) {
+      setError('Image is required');
+      return;
+    }
+
+    Object.keys(data).forEach((key) => {
+      if (key === 'image' && data[key]?.[0]) {
+        formData.append(key, data[key][0]);
+      } else {
+        formData.append(key, data[key]);
+      }
+    });
+    formData.append('uploadedBy', user._id);
+
+    try {
+      const response = await createPost(formData);
+      if (response.status === 200) {
+        navigate('/');
+      } else {
+        throw new Error('Failed to create post');
+      }
+    } catch (err) {
+      setError('Failed to create post');
+    }
+  };
 
   useEffect(() => {
     setNavbarItems(
@@ -63,72 +110,22 @@ export const CreatePost = () => {
     );
   }, []);
 
-  async function handleSummarize() {
-    try {
-      const { data } = await summarizeRequest({ text: description });
-      setDescription(data);
-    } catch (error) {
-      setError('Failed request to Ai');
-    }
-  }
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setImage(file);
-      setImagePreview(URL.createObjectURL(file));
-    }
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!title) {
-      setError('Title is required');
-      return;
-    }
-
-    if (!image) {
-      setError('Image is required');
-      return;
-    }
-
-    setLoading(true);
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('image', image);
-    formData.append('content', description);
-    formData.append('uploadedBy', user._id);
-
-    try {
-      const response = await createPost(formData);
-
-      if (response.status === 200) {
-        navigate('/');
-      } else {
-        throw new Error('Failed to create post');
-      }
-    } catch (err) {
-      setError('Failed to create post');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   return (
     <Box sx={{ padding: 4, maxWidth: 600, margin: '0 auto' }}>
       <Typography variant="h4" gutterBottom>
         Create a New Post
       </Typography>
-      <form onSubmit={handleSubmit}>
+      {error && <Typography sx={{ color: 'red' }}>* {error}</Typography>}
+      <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
         <Stack direction="column" spacing={2}>
           <FormLabel htmlFor="title">Title</FormLabel>
           <TextField
             id="title"
             variant="outlined"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
             fullWidth
-            required
+            {...register('title', { required: 'Title is required' })}
+            error={!!errors.title}
+            helperText={(errors.title?.message as string) || ''}
           />
           <Stack direction="column" spacing={1}>
             <FormLabel htmlFor="image">Image</FormLabel>
@@ -146,21 +143,17 @@ export const CreatePost = () => {
               type="file"
               id="image"
               accept="image/*"
-              onChange={handleImageChange}
+              {...register('image')}
               style={{ display: 'none' }}
             />
           </Stack>
 
-          {imagePreview && (
+          {image?.[0] && (
             <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
               <CardMedia
                 component="img"
-                image={imagePreview}
-                sx={{
-                  width: '100%',
-                  maxHeight: 200,
-                  objectFit: 'cover',
-                }}
+                image={URL.createObjectURL(image[0])}
+                sx={{ width: '100%', maxHeight: 200, objectFit: 'cover' }}
               />
             </Box>
           )}
@@ -169,22 +162,21 @@ export const CreatePost = () => {
           <TextField
             id="description"
             variant="outlined"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
             fullWidth
             multiline
             rows={4}
+            {...register('description', {
+              required: 'Description is required',
+            })}
+            error={!!errors.description}
+            helperText={(errors.description?.message as string) || ''}
           />
-          <Button
-            sx={{ textTransform: 'none' }}
-            onClick={() => handleSummarize()}
-          >
+          <Button sx={{ textTransform: 'none' }} onClick={handleSummarize}>
             <Typography sx={{ marginRight: '16px' }}>
-              Make Better Using Ai
+              Make Better Using AI
             </Typography>
             {summarizeLoading && <CircularProgress size="16px" />}
           </Button>
-
           <Button
             variant="contained"
             type="submit"
@@ -194,7 +186,6 @@ export const CreatePost = () => {
           >
             {loading ? <CircularProgress size={24} /> : 'Create Post'}
           </Button>
-          {error && <Typography sx={{ color: 'red' }}>* {error}</Typography>}
         </Stack>
       </form>
     </Box>

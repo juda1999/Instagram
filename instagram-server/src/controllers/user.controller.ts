@@ -17,7 +17,7 @@ class UserController extends BaseController<User> {
         return res.status(400).json({ message: 'Error uploading profile picture', error: err });
       }
 
-      const { email, firstName, username, lastName } = req.body;
+      const { email, firstName, username, lastName, likedPosts } = req.body;
       const profilePicturePath = req.file ? `/uploads/${req.file.filename}` : undefined;
 
       try {
@@ -30,6 +30,7 @@ class UserController extends BaseController<User> {
             username,
             lastName,
             firstName,
+            likedPosts,
             profilePicture: profilePicturePath,
           },
           {

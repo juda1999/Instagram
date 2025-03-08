@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import axios, { AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig } from 'axios';
+import api from '../api';
 
 export const useRequest = <T = any>(
   url: string,
-  options: AxiosRequestConfig,
-  auth = true
+  options?: AxiosRequestConfig
 ): { data: T; loading: boolean; error?: string; refetch: () => void } => {
   const [data, setData] = useState();
   const [loading, setLoading] = useState(false);
@@ -18,16 +18,9 @@ export const useRequest = <T = any>(
       setLoading(true);
       setError(null);
       try {
-        const response = await axios(`http://localhost:3001/${url}`, {
-          ...options,
-          headers: {
-            ...options.headers,
-            ...(auth
-              ? {
-                  Authorization: localStorage.getItem('accessToken'),
-                }
-              : {}),
-          },
+        const response = await api.request({
+          url,
+          ...(options ?? []),
         });
         setData(response.data);
       } catch (err) {

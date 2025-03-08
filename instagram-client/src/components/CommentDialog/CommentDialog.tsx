@@ -1,9 +1,11 @@
 import {
+  Avatar,
   Box,
   Button,
   DialogActions,
   DialogContent,
   DialogTitle,
+  Paper,
   Stack,
   TextField,
   Typography,
@@ -37,10 +39,10 @@ export const CommentsDialog: React.FC<CommentsDialogProps> = ({
   );
 
   const { action } = useRequestAction<Comment>('comment', options);
-  function handleAddComment() {
-    action({
+  async function handleAddComment() {
+    await action({
       message: newComment,
-      uploadedBy: user._id,
+      uploadedBy: user.username,
       post: postId,
       uploadedAt: new Date(),
     });
@@ -63,32 +65,63 @@ export const CommentsDialog: React.FC<CommentsDialogProps> = ({
           </Button>
         </Stack>
       </DialogTitle>
-      <DialogContent sx={{ height: '500px', width: '500px' }}>
-        <Box>
-          {comments?.length > 0 ? (
-            comments.map((comment, index) => (
-              <Box key={index} sx={{ marginBottom: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  {comment.message}
-                </Typography>
-              </Box>
-            ))
-          ) : (
-            <Typography variant="body2" color="text.secondary">
-              No comments yet.
-            </Typography>
-          )}
-        </Box>
-        <TextField
-          label="Add a Comment"
-          variant="outlined"
-          fullWidth
-          multiline
-          rows={3}
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          sx={{ mb: 2 }}
-        />
+      <DialogContent sx={{ flex: 'display', height: '500px', width: '500px' }}>
+        <Stack
+          spacing={2}
+          sx={{
+            overflow: 'hidden',
+            height: '100%',
+            justifyContent: 'space-between',
+          }}
+        >
+          <Stack spacing={1} sx={{ overflow: 'auto' }}>
+            {comments?.length > 0 ? (
+              comments.map((comment, index) => (
+                <Stack
+                  key={index}
+                  direction="row"
+                  spacing={2}
+                  alignItems="center"
+                >
+                  <Avatar sx={{ bgcolor: 'primary.main' }}>
+                    {comment.uploadedBy.charAt(0).toUpperCase()}
+                  </Avatar>
+
+                  <Stack flex={1} spacing={0.5}>
+                    <Stack
+                      direction="row"
+                      spacing={1}
+                      alignItems="center"
+                      justifyContent="space-between"
+                    >
+                      <Typography variant="body1" fontWeight="bold">
+                        {comment.uploadedBy}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {new Date(comment.uploadedAt).toLocaleDateString()}
+                      </Typography>
+                    </Stack>
+                    <Typography variant="body2">{comment.message}</Typography>
+                  </Stack>
+                </Stack>
+              ))
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                No comments yet.
+              </Typography>
+            )}
+          </Stack>
+          <TextField
+            label="Add a Comment"
+            variant="outlined"
+            fullWidth
+            multiline
+            rows={3}
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            sx={{ mb: 2 }}
+          />
+        </Stack>
       </DialogContent>
       <DialogActions>
         <Button onClick={handleAddComment} color="primary" variant="contained">

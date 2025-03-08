@@ -16,7 +16,7 @@ import {
   Avatar,
 } from '@mui/material';
 import { useRequestAction } from '../../hooks';
-import { Edit, PhotoCamera } from '@mui/icons-material';
+import { Edit } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
 
 export const UserDetails: React.FC = () => {
@@ -130,11 +130,15 @@ export const UserDetails: React.FC = () => {
             direction="row"
             justifyContent="center"
           >
-            <ProfilePic
-              key={currentUser?.profilePicture}
-              name={currentUser?.firstName}
-              path={currentUser?.profilePicture}
-            />
+            {editMode && image ? (
+              <Avatar src={URL.createObjectURL(image)} sx={{ marginTop: 2 }} />
+            ) : (
+              <ProfilePic
+                key={currentUser?.profilePicture}
+                name={currentUser?.firstName}
+                path={currentUser?.profilePicture}
+              />
+            )}
             {userId === user?._id && (
               <Button
                 sx={{ right: 0, position: 'absolute' }}
@@ -149,6 +153,25 @@ export const UserDetails: React.FC = () => {
 
           {editMode ? (
             <>
+              <Stack direction="row" spacing={5}>
+                <label htmlFor="image">
+                  <Button
+                    variant="outlined"
+                    component="span"
+                    fullWidth
+                    sx={{ textTransform: 'none', textAlign: 'left' }}
+                  >
+                    Change Profile pic
+                  </Button>
+                </label>
+                <input
+                  id="image"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+              </Stack>
               <TextField
                 label="Username"
                 value={currentUser?.username || ''}
@@ -188,31 +211,6 @@ export const UserDetails: React.FC = () => {
                 fullWidth
                 margin="normal"
               />
-              <Stack direction="row" spacing={5}>
-                <label htmlFor="image">
-                  <Button
-                    variant="outlined"
-                    component="span"
-                    fullWidth
-                    sx={{ textTransform: 'none', textAlign: 'left' }}
-                  >
-                    Choose Image
-                  </Button>
-                </label>
-                <input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
-                />
-                {image && (
-                  <Avatar
-                    src={URL.createObjectURL(image)}
-                    sx={{ width: 50, height: 50, marginTop: 2 }}
-                  />
-                )}
-              </Stack>
             </>
           ) : (
             <Box marginTop="1rem">

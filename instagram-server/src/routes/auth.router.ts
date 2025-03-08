@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { login, register, tokenLogin, logout, googleLogin, refresh } from '../controllers/auth.controller';
+import { login, register, tokenLogin, googleLogin, refresh } from '../controllers/auth.controller';
 
 export const authRouter = Router();
 /**

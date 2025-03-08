@@ -6,8 +6,6 @@ import {
   Stack,
   TextField,
   CircularProgress,
-  Snackbar,
-  Alert,
   Box,
   Typography,
   FormLabel,
@@ -20,7 +18,7 @@ export const CreatePost = () => {
   const [title, setTitle] = useState('');
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
-  const [content, setContent] = useState('');
+  const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -67,8 +65,8 @@ export const CreatePost = () => {
 
   async function handleSummarize() {
     try {
-      const { data } = await summarizeRequest({ text: content });
-      setContent(data);
+      const { data } = await summarizeRequest({ text: description });
+      setDescription(data);
     } catch (error) {
       setError('Failed request to Ai');
     }
@@ -89,11 +87,16 @@ export const CreatePost = () => {
       return;
     }
 
+    if (!image) {
+      setError('Image is required');
+      return;
+    }
+
     setLoading(true);
     const formData = new FormData();
     formData.append('title', title);
     formData.append('image', image);
-    formData.append('content', content);
+    formData.append('content', description);
     formData.append('uploadedBy', user._id);
 
     try {
@@ -116,17 +119,6 @@ export const CreatePost = () => {
       <Typography variant="h4" gutterBottom>
         Create a New Post
       </Typography>
-      {error && (
-        <Snackbar
-          open={true}
-          autoHideDuration={6000}
-          onClose={() => setError(null)}
-        >
-          <Alert onClose={() => setError(null)} severity="error">
-            {error}
-          </Alert>
-        </Snackbar>
-      )}
       <form onSubmit={handleSubmit}>
         <Stack direction="column" spacing={2}>
           <FormLabel htmlFor="title">Title</FormLabel>
@@ -173,12 +165,12 @@ export const CreatePost = () => {
             </Box>
           )}
 
-          <FormLabel htmlFor="content">Content</FormLabel>
+          <FormLabel htmlFor="description">Description</FormLabel>
           <TextField
-            id="content"
+            id="description"
             variant="outlined"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             fullWidth
             multiline
             rows={4}
@@ -202,6 +194,7 @@ export const CreatePost = () => {
           >
             {loading ? <CircularProgress size={24} /> : 'Create Post'}
           </Button>
+          {error && <Typography sx={{ color: 'red' }}>* {error}</Typography>}
         </Stack>
       </form>
     </Box>

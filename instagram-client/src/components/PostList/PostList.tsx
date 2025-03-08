@@ -2,7 +2,6 @@ import { AppContext, Post as PostInterface } from '../../App';
 import { Post } from '../Post';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
-import { AxiosRequestConfig } from 'axios';
 import { useRequest } from '../../hooks/useRequest';
 import './PostList.css';
 import {
@@ -24,43 +23,40 @@ export const PostList: React.FC<PostListProps> = ({ userId }) => {
   const [items, setItems] = useState<PostInterface[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [showLiked, setShowLiked] = useState(false);
-  const limit = 10;
+  const pageSize = 10;
 
   const options = useMemo(
-    (): AxiosRequestConfig => ({
+    () => ({
       method: 'post',
-      data: { skip, limit, filterIds: showLiked ? user.likedPosts : undefined },
+      data: {
+        skip,
+        limit: pageSize,
+        filterIds: showLiked ? user.likedPosts : undefined,
+      },
     }),
-    [skip, limit, showLiked]
+    [skip, pageSize, showLiked, user]
   );
 
-  const { data, loading } = useRequest(
+  const { data, loading, error } = useRequest(
     userId ? `post?uploader=${userId}` : 'post',
     options
   );
 
   const fetchItems = async () => {
-    setSkip((prev) => prev + limit);
+    setSkip((prev) => prev + pageSize);
   };
 
   useEffect(() => {
     setItems((items) =>
       _.uniqBy([...items, ...(data ?? [])], (item) => item._id)
     );
-    setHasMore(data?.length === limit);
+    setHasMore(data?.length === pageSize);
   }, [data]);
-
-  // const filteredItems = useMemo(() => {
-  //   if (showLiked) {
-  //     return items.filter((item) => user.likedPosts.includes(item._id));
-  //   } else {
-  //     return items;
-  //   }
-  // }, [showLiked, items]);
 
   useEffect(() => {
     setHasMore(true);
     setItems([]);
+    setSkip(0);
   }, [showLiked]);
 
   return (
@@ -106,6 +102,7 @@ export const PostList: React.FC<PostListProps> = ({ userId }) => {
             />
           ))
         )}
+        {error && <Typography sx={{ color: 'red' }}>{error}</Typography>}
       </InfiniteScroll>
     </Stack>
   );

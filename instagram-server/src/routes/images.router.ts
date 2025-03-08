@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Router } from "express";
 import { authMiddleware } from "../controllers/auth.controller";
 import { imagesController } from "../controllers/images.controller";
 
@@ -50,4 +50,4 @@ export const imagesRouter = Router();
  *       tags:
  *         - Images
  */
-imagesRouter.get("/",authMiddleware, imagesController.getImage.bind(imagesController) )
+imagesRouter.get("/", imagesController.getImage.bind(imagesController) )

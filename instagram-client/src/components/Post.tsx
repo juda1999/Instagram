@@ -129,7 +129,7 @@ export const Post: React.FC<PostProps> = ({
         {postUserData?.profilePicture ? (
           <ProfilePic
             path={postUserData?.profilePicture}
-            name={postUserData?.firstName}
+            firstName={postUserData?.firstName}
             onClick={() => navigate(`/user/${postUserData._id}`)}
           />
         ) : (

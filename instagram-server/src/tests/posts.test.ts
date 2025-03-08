@@ -54,7 +54,6 @@ describe("Posts Tests", () => {
         uploadedBy: testUser._id
       });
     expect(response.statusCode).toBe(200);
-    console.log(response.body)
     expect(response.body.title).toBe("Test title");
     expect(response.body.description).toBe("Test description");
     postId = response.body._id;

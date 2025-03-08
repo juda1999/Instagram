@@ -63,7 +63,6 @@ class PostsController extends BaseController<Post> {
 
   async create(req: Request, res: Response) {
     const uploadMiddleware = upload.single('image');
-    console.log(req.body)
     uploadMiddleware(req, res, async (err) => {
       if (err) {
         res.status(400).json({ message: 'Error uploading file', error: err });
@@ -95,7 +94,6 @@ class PostsController extends BaseController<Post> {
         }
         res.status(200).json(savedPost);
       } catch (err) {
-        console.log(err)
         res.status(500).json({ message: 'Error saving post', error: err });
       }
     });

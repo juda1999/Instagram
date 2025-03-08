@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export function getImageRequestPath(path) {
+export function getImageRequestPath(path: string) {
   return `http://localhost:3001/image?path=${path}`;
 }
 

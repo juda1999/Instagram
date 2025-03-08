@@ -40,7 +40,7 @@ export function Home() {
           Logout
         </Button>
         <ProfilePic
-          name={user?.firstName}
+          firstName={user?.firstName}
           path={user?.profilePicture}
           onClick={() => navigate(`/user/${user._id}`)}
         />

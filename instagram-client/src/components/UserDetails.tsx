@@ -54,7 +54,7 @@ export const UserDetails: React.FC = () => {
           Logout
         </Button>
         <ProfilePic
-          name={user?.firstName}
+          firstName={user?.firstName}
           path={user?.profilePicture}
           onClick={() => navigate(`/user/${user._id}`)}
         />
@@ -134,7 +134,7 @@ export const UserDetails: React.FC = () => {
             ) : (
               <ProfilePic
                 key={currentUser?.profilePicture}
-                name={currentUser?.firstName}
+                firstName={currentUser?.firstName}
                 path={currentUser?.profilePicture}
               />
             )}

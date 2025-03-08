@@ -5,7 +5,6 @@ import path from "path"
 class ImagesController {
     getImage = (req: Request, res: Response) => {
         const imagePath = req.query.path as string;
-        console.log(req.query)
         if (!imagePath) {
             res.status(400).send('Image path is required');
             return
@@ -49,7 +48,7 @@ class ImagesController {
             });
 
         } catch (error) {
-            console.log(error)
+            res.status(500).send('error getting image');
         }
     }
 }

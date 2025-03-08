@@ -8,7 +8,7 @@
     "dev": "ts-node-dev --respawn --transpileOnly src/app.ts",
     "build": "tsc",
     "start:prod": "node dist/app.js",
-    "test": "jest --detectOpenHandles --forceExit --runInBand",
+    "test": "jest --detectOpenHandles --coverage --forceExit --runInBand",
     "testAuth": "jest --detectOpenHandles --forceExit auth.test.ts",
     "testPost": "jest --detectOpenHandles --forceExit posts.test.ts",
     "testComment": "jest --detectOpenHandles --forceExit comments.test.ts",

@@ -13,13 +13,13 @@ import {
   Avatar,
 } from '@mui/material';
 import { Delete, Edit, Favorite, FavoriteBorder } from '@mui/icons-material';
-import { AppContext, Comment, Post as PostInterface, User } from '../../App';
-import { useRequest } from '../../hooks/useRequest';
-import { CommentsDialog } from '../CommentDialog/CommentDialog';
-import { useRequestAction } from '../../hooks';
+import { AppContext, Comment, Post as PostInterface, User } from '../App';
+import { useRequest } from '../hooks/useRequest';
+import { CommentsDialog } from './CommentDialog';
+import { useRequestAction } from '../hooks';
 import _ from 'lodash';
-import { ProfilePic } from '../ProfilePic';
-import { getImageRequestPath } from '../../api';
+import { ProfilePic } from './ProfilePic';
+import { getImageRequestPath } from '../api';
 import { useNavigate } from 'react-router-dom';
 
 interface PostProps {

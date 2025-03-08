@@ -1,19 +1,17 @@
 import {
   Avatar,
-  Box,
   Button,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Paper,
   Stack,
   TextField,
   Typography,
 } from '@mui/material';
 import React, { useContext, useMemo, useState } from 'react';
 import { Fragment } from 'react/jsx-runtime';
-import { AppContext, Comment } from '../../App';
-import { useRequestAction } from '../../hooks/useRequestAction';
+import { AppContext, Comment } from '../App';
+import { useRequestAction } from '../hooks/useRequestAction';
 import { Close } from '@mui/icons-material';
 
 type CommentsDialogProps = {

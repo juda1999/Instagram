@@ -10,7 +10,6 @@ import {
   Avatar,
   CircularProgress,
 } from '@mui/material';
-import { PhotoCamera } from '@mui/icons-material';
 import { useRequestAction } from '../../hooks';
 
 export const SignUp: React.FC = () => {
@@ -22,7 +21,6 @@ export const SignUp: React.FC = () => {
   const [lastName, setLastName] = useState('');
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   useEffect(() => setNavbarItems(null), []);
 
@@ -33,7 +31,10 @@ export const SignUp: React.FC = () => {
     }),
     []
   );
-  const { action: signUp } = useRequestAction('auth/register', options);
+  const { action: signUp, loading } = useRequestAction(
+    'auth/register',
+    options
+  );
 
   const handleProfilePictureChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -62,7 +63,6 @@ export const SignUp: React.FC = () => {
       formData.append('profilePicture', profilePicture);
     }
 
-    setLoading(true);
     try {
       const response = await signUp(formData);
       setUser(response.data.user);
@@ -70,8 +70,6 @@ export const SignUp: React.FC = () => {
       navigate('/');
     } catch (err) {
       setError('Failed to sign up. Please try again.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -99,6 +97,29 @@ export const SignUp: React.FC = () => {
         style={{ width: '100%', maxWidth: 400 }}
       >
         <Grid2 container spacing={2}>
+          <Grid2 size={12} spacing={2} display="flex" justifyContent="center">
+            <label htmlFor="image">
+              <Avatar
+                alt={username ?? 'User'}
+                src={profilePicture ? URL.createObjectURL(profilePicture) : ''}
+                sx={{
+                  width: 100,
+                  '&:hover': { opacity: 0.9 },
+                  cursor: 'pointer',
+                  height: 100,
+                  marginTop: 2,
+                }}
+              />
+            </label>
+            <input
+              type="file"
+              id="image"
+              accept="image/*"
+              onChange={handleProfilePictureChange}
+              style={{ display: 'none' }}
+            />
+          </Grid2>
+
           <Grid2 size={12}>
             <TextField
               label="Username"
@@ -146,30 +167,6 @@ export const SignUp: React.FC = () => {
               required
             />
           </Grid2>
-          <Grid2 size={12}>
-            <Button
-              variant="contained"
-              component="label"
-              fullWidth
-              startIcon={<PhotoCamera />}
-            >
-              Upload Profile Picture
-              <input
-                type="file"
-                hidden
-                accept="image/*"
-                onChange={handleProfilePictureChange}
-              />
-            </Button>
-          </Grid2>
-          {profilePicture && (
-            <Grid2 size={12} display="flex" justifyContent="center">
-              <Avatar
-                src={URL.createObjectURL(profilePicture)}
-                sx={{ width: 100, height: 100, marginTop: 2 }}
-              />
-            </Grid2>
-          )}
           <Grid2 size={12}>
             <Button
               variant="contained"

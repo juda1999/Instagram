@@ -11,8 +11,9 @@ import {
   Box,
   CircularProgress,
   Grid2,
+  Stack,
 } from '@mui/material';
-import axios from 'axios';
+import api from '../../api';
 
 export const SignIn: React.FC = () => {
   const { setUser, setNavbarItems } = useContext(AppContext);
@@ -33,8 +34,6 @@ export const SignIn: React.FC = () => {
     'auth/tokenLogin',
     tokenLoginOptions
   );
-
-  useEffect(() => setNavbarItems(null), []);
 
   async function handleOnLoad() {
     const token = localStorage.getItem('accessToken');
@@ -59,6 +58,7 @@ export const SignIn: React.FC = () => {
 
   useEffect(() => {
     handleOnLoad();
+    setNavbarItems(null);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -70,10 +70,9 @@ export const SignIn: React.FC = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post<UserResponse>(
-        'http://localhost:3001/auth/login',
-        { email, password }
-      );
+      const response = await api.request<UserResponse>({
+        data: { email, password },
+      });
       handleSuccessLogin(response.data);
     } catch (err) {
       setError('Invalid credentials. Please try again.');
@@ -85,26 +84,22 @@ export const SignIn: React.FC = () => {
   const handleGoogleLoginSuccess = async (response: CredentialResponse) => {
     const { credential } = response;
     try {
+      setLoading(true);
+
       const response = await googleLoginRequest({ googleToken: credential });
       handleSuccessLogin(response.data);
-    } catch (error) {
-      console.error(error);
+    } catch {
+      setError('Google login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleLoginFailure = () => {
-    setError('Login Failed');
-  };
-
   return (
-    <Box
-      className="sign-in-container"
-      display="flex"
-      flexDirection="column"
+    <Stack
+      sx={{ height: '100vh', backgroundColor: '#f0f4f8' }}
       alignItems="center"
       justifyContent="center"
-      height="100vh"
-      bgcolor="#f0f4f8"
     >
       <Typography variant="h4" gutterBottom>
         Sign In
@@ -155,7 +150,7 @@ export const SignIn: React.FC = () => {
       </form>
       <GoogleLogin
         onSuccess={handleGoogleLoginSuccess}
-        onError={handleLoginFailure}
+        onError={() => setError('Google login failed')}
         useOneTap
         size="large"
         theme="outline"
@@ -167,7 +162,7 @@ export const SignIn: React.FC = () => {
       >
         Register
       </Button>
-    </Box>
+    </Stack>
   );
 };
 

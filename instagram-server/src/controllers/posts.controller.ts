@@ -1,10 +1,6 @@
 import { postModel, Post } from "../models/post";
-import axios from 'axios';
 import { Request, Response } from "express";
 import { BaseController } from "./base.controller";
-import path from 'path';
-import fs from 'fs';
-import multer from 'multer';
 import OpenAI from "openai";
 import { upload } from "../server";
 

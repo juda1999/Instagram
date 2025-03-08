@@ -10,6 +10,7 @@ import {
   IconButton,
   TextField,
   Box,
+  Avatar,
 } from '@mui/material';
 import { Delete, Edit, Favorite, FavoriteBorder } from '@mui/icons-material';
 import { AppContext, Comment, Post as PostInterface, User } from '../../App';
@@ -36,7 +37,6 @@ export const Post: React.FC<PostProps> = ({
 }) => {
   const { user, setUser } = useContext(AppContext);
   const navigate = useNavigate();
-  const options = useMemo(() => ({ method: 'get' }), []);
   const [commentModalOpen, setCommentModalOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editedPost, setEditedPost] = useState({ ...post });
@@ -70,12 +70,10 @@ export const Post: React.FC<PostProps> = ({
   );
 
   const { data: comments, refetch } = useRequest<Comment[]>(
-    `comment/postId/${savedPost._id}`,
-    options
+    `comment/postId/${savedPost._id}`
   );
   const { data: postUserData } = useRequest<User>(
-    `user/userInfo/${savedPost.uploadedBy}`,
-    options
+    `user/userInfo/${savedPost.uploadedBy}`
   );
 
   function handleLiked() {
@@ -128,11 +126,15 @@ export const Post: React.FC<PostProps> = ({
         spacing={2}
         sx={{ padding: 2 }}
       >
-        <ProfilePic
-          path={postUserData?.profilePicture}
-          name={postUserData?.firstName}
-          onClick={() => navigate(`/user/${postUserData._id}`)}
-        />
+        {postUserData?.profilePicture ? (
+          <ProfilePic
+            path={postUserData?.profilePicture}
+            name={postUserData?.firstName}
+            onClick={() => navigate(`/user/${postUserData._id}`)}
+          />
+        ) : (
+          <Avatar />
+        )}
         <Typography sx={{ flex: 1 }} color="text.secondary">
           {postUserData?.username}
         </Typography>

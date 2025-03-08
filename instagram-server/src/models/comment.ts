@@ -20,8 +20,7 @@ const commentSchema = new mongoose.Schema<Comment>({
         required: true
     },
     uploadedBy: {
-        type: Types.ObjectId,
-        ref: "User",
+        type: String,
         required: true
     },
     uploadedAt: {

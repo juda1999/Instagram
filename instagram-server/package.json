@@ -7,7 +7,7 @@
     "start": "ts-node src/app.ts",
     "dev": "ts-node-dev --respawn --transpileOnly src/app.ts",
     "build": "tsc",
-    "start:prod": "tsc -p tsconfig_prod.json && node dist/app.js",
+    "start:prod": "cp .envprod .env && tsc -p tsconfig_prod.json && node dist/app.ts ",
     "test": "jest --detectOpenHandles --forceExit --runInBand",
     "testAuth": "jest --detectOpenHandles --forceExit auth.test.ts",
     "testPost": "jest --detectOpenHandles --forceExit posts.test.ts",

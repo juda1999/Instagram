@@ -7,7 +7,6 @@ const port = process.env.PORT;
 initApp().then(
     (app) =>  {
         if(process.env.NODE_ENV !== 'Prod') {
-            console.log(process.env.NODE_ENV);
             console.log('This is development mode :)');
         http.createServer(app).listen(port, () => console.log(`App is listening on port: ${port}`));
         } else {

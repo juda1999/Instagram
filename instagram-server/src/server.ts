@@ -38,6 +38,13 @@ app.use('/comment', commentsRouter);
 app.use('/auth', authRouter);
 app.use('/user', userRouter);
 
+// Serve React static files
+const frontPoth = path.join(__dirname, 'instagram-client');
+app.use(express.static(frontPoth));
+app.get('*', (req: Request, res: Response) => {
+  res.sendFile(path.join(frontPoth, 'index.html'));
+})
+
 if (process.env.NODE_ENV === "Deployment") {
   const options = {
     definition: {

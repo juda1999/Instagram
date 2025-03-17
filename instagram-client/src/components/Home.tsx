@@ -24,7 +24,9 @@ export function Home() {
             textTransform: 'none',
             backgroundColor: 'aliceblue',
             height: '50%',
+            fontFamily: 'cursive',
           }}
+          
           onClick={() => navigate('/add')}
         >
           Add Post
@@ -34,6 +36,7 @@ export function Home() {
             textTransform: 'none',
             backgroundColor: 'aliceblue',
             height: '50%',
+            fontFamily: 'cursive',
           }}
           onClick={() => handleLogout()}
         >

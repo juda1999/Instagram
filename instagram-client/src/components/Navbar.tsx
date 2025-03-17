@@ -9,9 +9,9 @@ export const Navbar: React.FC = () => {
   const { navbarItems } = useContext(AppContext);
   return (
     <AppBar position="sticky">
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
+      <Toolbar sx={{ justifyContent: 'space-between',display: 'flex' }}>
         <Stack direction="row" spacing={1}>
-          <Typography variant="h6">Instagram</Typography>
+          <Typography variant="h5" fontFamily={'cursive'}>RentIt</Typography>
         </Stack>
         {navbarItems}
       </Toolbar>

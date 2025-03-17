@@ -60,9 +60,17 @@ export const PostList: React.FC<PostListProps> = ({ userId }) => {
   }, [showLiked]);
 
   return (
-    <Stack sx={{ backgroundColor: '#f0f4f8', minHeight: 'calc(100vh - 64px)' }}>
-      {!userId && (
-        <Button sx={{ marginLeft: 2, width: 'fit-content' }} disableRipple>
+    <Stack 
+    sx={{  
+      backgroundImage: 'url("/house-bg.jpg")',
+     backgroundSize: 'repeat',
+     backgroundPosition: 'center',
+     padding: 2,
+     minHeight: 'calc(100vh - 64px)',
+     width: '100%',
+     }}>
+          {!userId && (
+        <Button sx={{ marginLeft: 2, width: 'fit-content', bgcolor: '#ffffff' }} disableRipple>
           <Checkbox
             checked={showLiked}
             onChange={(e, checked) => setShowLiked(checked)}
@@ -78,7 +86,7 @@ export const PostList: React.FC<PostListProps> = ({ userId }) => {
         loader={<CircularProgress />}
       >
         {items?.length === 0 && !loading && data?.length === 0 ? (
-          <Typography sx={{ marginTop: '16px' }}>No Posts</Typography>
+          <Typography sx={{ marginTop: '16px', bgcolor: '#ffffff' }}>No Posts</Typography>
         ) : (
           items.map((post) => (
             <Post

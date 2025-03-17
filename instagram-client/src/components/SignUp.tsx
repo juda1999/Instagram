@@ -63,109 +63,162 @@ export const SignUp: React.FC = () => {
 
   return (
     <Box
-      display="flex"
-      flexDirection="column"
-      alignItems="center"
-      justifyContent="center"
-      height="100vh"
-      bgcolor="#f0f4f8"
+  display="flex"
+  flexDirection="column"
+  alignItems="center"
+  justifyContent="center"
+  height="100vh"
+  sx={{  
+     backgroundImage: 'url("/house-bg.jpg")',
+    backgroundSize: 'repeat',
+    backgroundPosition: 'center',
+    padding: 2,
+  }}
+>
+  <Box
+    sx={{
+      backgroundColor: '#ffffff', // Card background
+      padding: 4,
+      borderRadius: 2,
+      boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Subtle shadow
+      width: '100%',
+      maxWidth: 400,
+    }}
+  >
+    <Typography
+      variant="h4"
+      gutterBottom
+      fontFamily= { 'cursive' }
+      sx={{
+        fontWeight: 'bold',
+        color: '#333',
+        textAlign: 'center',
+      }}
     >
-      <Typography variant="h4" gutterBottom>
-        Sign Up
+      Sign Up
+    </Typography>
+    <Typography
+      variant="body1"
+      gutterBottom
+      sx={{
+        color: '#666',
+        textAlign: 'center',
+        marginBottom: 3,
+      }}
+    >
+    </Typography>
+    {error && (
+      <Typography
+        color="error"
+        variant="body2"
+        sx={{ marginBottom: 2, textAlign: 'center' }}
+      >
+        {error}
       </Typography>
-      {error && (
-        <Typography color="error" variant="body2" sx={{ marginBottom: 2 }}>
-          {error}
-        </Typography>
-      )}
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        encType="multipart/form-data"
-        style={{ width: '100%', maxWidth: 400 }}
-      >
-        <Stack spacing={2} alignItems="center">
-          <label htmlFor="image">
-            <Avatar
-              alt="User"
-              src={
-                profilePicture?.[0]
-                  ? URL.createObjectURL(profilePicture[0])
-                  : ''
-              }
-              sx={{
-                width: 100,
-                height: 100,
-                cursor: 'pointer',
-                '&:hover': { opacity: 0.9 },
-              }}
-            />
-          </label>
-          <input
-            type="file"
-            id="image"
-            accept="image/*"
-            {...register('profilePicture')}
-            style={{ display: 'none' }}
+    )}
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      encType="multipart/form-data"
+      style={{ width: '100%' }}
+    >
+      <Stack spacing={2} alignItems="center">
+        <label htmlFor="image">
+          <Avatar
+            alt="User"
+            src={
+              profilePicture?.[0]
+                ? URL.createObjectURL(profilePicture[0])
+                : ''
+            }
+            sx={{
+              width: 100,
+              height: 100,
+              cursor: 'pointer',
+              border: '2px solid #ddd', // Border around avatar
+              boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)', // Subtle shadow
+              '&:hover': { opacity: 0.9 },
+            }}
           />
-          <TextField
-            label="Username"
-            fullWidth
-            {...register('username', { required: 'Username is required' })}
-            error={!!errors.username}
-            helperText={(errors.username?.message as string) ?? ''}
-          />
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            {...register('email', { required: 'Email is required' })}
-            error={!!errors.email}
-            helperText={(errors.email?.message as string) ?? ''}
-          />
-          <TextField
-            label="First Name"
-            fullWidth
-            {...register('firstName', { required: 'First name is required' })}
-            error={!!errors.firstName}
-            helperText={(errors.firstName?.message as string) ?? ''}
-          />
-          <TextField
-            label="Last Name"
-            fullWidth
-            {...register('lastName', { required: 'Last name is required' })}
-            error={!!errors.lastName}
-            helperText={(errors.lastName?.message as string) ?? ''}
-          />
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            {...register('password', { required: 'Password is required' })}
-            error={!!errors.password}
-            helperText={(errors.password?.message as string) ?? ''}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            fullWidth
-            disabled={loading}
-          >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              'Register'
-            )}
-          </Button>
-        </Stack>
-      </form>
-      <Button
-        onClick={() => navigate('/signIn')}
-        color="primary"
-        sx={{ marginTop: 2 }}
-      >
-        Already registered? Sign In
-      </Button>
-    </Box>
+        </label>
+        <input
+          type="file"
+          id="image"
+          accept="image/*"
+          {...register('profilePicture')}
+          style={{ display: 'none' }}
+        />
+        <TextField
+          label="Username"
+          fullWidth
+          {...register('username', { required: 'Username is required' })}
+          error={!!errors.username}
+          helperText={(errors.username?.message as string) ?? ''}
+        />
+        <TextField
+          label="Email"
+          type="email"
+          fullWidth
+          {...register('email', { required: 'Email is required' })}
+          error={!!errors.email}
+          helperText={(errors.email?.message as string) ?? ''}
+        />
+        <TextField
+          label="First Name"
+          fullWidth
+          {...register('firstName', { required: 'First name is required' })}
+          error={!!errors.firstName}
+          helperText={(errors.firstName?.message as string) ?? ''}
+        />
+        <TextField
+          label="Last Name"
+          fullWidth
+          {...register('lastName', { required: 'Last name is required' })}
+          error={!!errors.lastName}
+          helperText={(errors.lastName?.message as string) ?? ''}
+        />
+        <TextField
+          label="Password"
+          type="password"
+          fullWidth
+          {...register('password', { required: 'Password is required' })}
+          error={!!errors.password}
+          helperText={(errors.password?.message as string) ?? ''}
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          type="submit"
+          fullWidth
+          disabled={loading}
+          sx={{
+            borderRadius: 2, // Rounded button
+            textTransform: 'none', // Disable uppercase text
+            fontWeight: 'bold',
+            '&:hover': {
+              backgroundColor: '#0056b3', // Darker hover color
+            },
+          }}
+        >
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            'Register'
+          )}
+        </Button>
+      </Stack>
+    </form>
+    <Button
+      onClick={() => navigate('/signIn')}
+      color="primary"
+      sx={{
+        marginTop: 2,
+        textTransform: 'none',
+        fontWeight: 'bold',
+      }}
+    >
+      Already registered? Sign In
+    </Button>
+  </Box>
+</Box>
   );
 };

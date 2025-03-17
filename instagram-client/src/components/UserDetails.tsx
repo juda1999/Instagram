@@ -28,12 +28,13 @@ export const UserDetails: React.FC = () => {
   const [error, setError] = useState('');
   useEffect(() => {
     setNavbarItems(
-      <Stack spacing={2} alignItems="center" direction="row">
+      <Stack spacing={2} alignItems="center" direction="row" >
         <Button
           sx={{
             textTransform: 'none',
             backgroundColor: 'aliceblue',
             height: '50%',
+            fontFamily: 'cursive',
           }}
           onClick={() => navigate('/')}
         >
@@ -44,6 +45,7 @@ export const UserDetails: React.FC = () => {
             textTransform: 'none',
             backgroundColor: 'aliceblue',
             height: '50%',
+            fontFamily: 'cursive',
           }}
           onClick={() => {
             localStorage.removeItem('accessToken');
@@ -119,146 +121,225 @@ export const UserDetails: React.FC = () => {
   };
 
   return (
-    <Stack sx={{ backgroundColor: '#f0f4f8', minHeight: 'calc(100vh - 64px)' }}>
-      <CardHeader title={<Typography variant="h6">User Details</Typography>} />
-
-      <Stack alignItems="center">
-        <CardContent sx={{ width: '50%' }}>
-          <Stack
-            sx={{ position: 'relative' }}
-            direction="row"
-            justifyContent="center"
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      sx={{
+        backgroundImage: 'url("/house-bg.jpg")', // Consistent background
+        backgroundSize: 'repeat',
+        backgroundPosition: 'center',
+        padding: 2,
+        minHeight: '100vh',
+      }}
+    >
+      {/* Card for User Details */}
+      <Box
+        sx={{
+          backgroundColor: '#ffffff', // Card background
+          padding: 4,
+          borderRadius: 2,
+          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Subtle shadow
+          width: '100%',
+          maxWidth: 800,
+        }}
+      >
+        <Typography
+          variant="h4"
+          gutterBottom
+          fontFamily="cursive"
+          sx={{
+            fontWeight: 'bold',
+            color: '#333',
+            textAlign: 'center',
+          }}
+        >
+          User Details
+        </Typography>
+  
+        {error && (
+          <Typography
+            color="error"
+            variant="body2"
+            sx={{ marginBottom: 2, textAlign: 'center' }}
           >
-            {editMode && image ? (
-              <Avatar src={URL.createObjectURL(image)} sx={{ marginTop: 2 }} />
-            ) : (
-              <ProfilePic
-                key={currentUser?.profilePicture}
-                firstName={currentUser?.firstName}
-                path={currentUser?.profilePicture}
-              />
-            )}
-            {userId === user?._id && (
-              <Button
-                sx={{ right: 0, position: 'absolute' }}
-                onClick={() => setEditMode(true)}
-                variant="text"
-                color="primary"
-              >
-                <Edit />
-              </Button>
-            )}
-          </Stack>
-
-          {editMode ? (
-            <>
-              <Stack direction="row" spacing={5}>
-                <label htmlFor="image">
-                  <Button
-                    variant="outlined"
-                    component="span"
-                    fullWidth
-                    sx={{ textTransform: 'none', textAlign: 'left' }}
-                  >
-                    Change Profile pic
-                  </Button>
-                </label>
-                <input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  style={{ display: 'none' }}
+            {error}
+          </Typography>
+        )}
+  
+        <Stack alignItems="center">
+          <CardContent sx={{ width: '100%' }}>
+            <Stack
+              sx={{ position: 'relative' }}
+              direction="row"
+              justifyContent="center"
+            >
+              {editMode && image ? (
+                <Avatar
+                  src={URL.createObjectURL(image)}
+                  sx={{
+                    width: 100,
+                    height: 100,
+                    marginTop: 2,
+                    border: '2px solid #ddd',
+                    boxShadow: '0 2px 6px rgba(0, 0, 0, 0.1)',
+                  }}
                 />
-              </Stack>
-              <TextField
-                label="Username"
-                value={currentUser?.username || ''}
-                onChange={(e) =>
-                  setCurrentUser((prevUser) => ({
-                    ...prevUser,
-                    username: e.target.value,
-                  }))
-                }
-                variant="outlined"
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="First name"
-                value={currentUser?.firstName || ''}
-                onChange={(e) =>
-                  setCurrentUser((prevUser) => ({
-                    ...prevUser,
-                    firstName: e.target.value,
-                  }))
-                }
-                variant="outlined"
-                fullWidth
-                margin="normal"
-              />
-              <TextField
-                label="Last name"
-                value={currentUser?.lastName || ''}
-                onChange={(e) =>
-                  setCurrentUser((prevUser) => ({
-                    ...prevUser,
-                    lastName: e.target.value,
-                  }))
-                }
-                variant="outlined"
-                fullWidth
-                margin="normal"
-              />
-            </>
-          ) : (
-            <Box marginTop="1rem">
-              <Stack direction="column" spacing={0.5}>
-                <FormLabel sx={{ fontSize: '0.875rem' }}>Username</FormLabel>
-                <Typography>{currentUser?.username}</Typography>
-
-                <FormLabel sx={{ fontSize: '0.875rem' }}>Email</FormLabel>
-                <Typography>{currentUser?.email}</Typography>
-
-                <FormLabel sx={{ fontSize: '0.875rem' }}>First Name</FormLabel>
-                <Typography>{currentUser?.firstName}</Typography>
-
-                <FormLabel sx={{ fontSize: '0.875rem' }}>Last Name</FormLabel>
-                <Typography>{currentUser?.lastName}</Typography>
-              </Stack>
-            </Box>
-          )}
-        </CardContent>
-
-        <CardActions>
-          {editMode && (
-            <Stack spacing={1} direction="row">
-              <Button
-                onClick={handleSubmit}
-                variant="contained"
-                color="primary"
-              >
-                Save Changes
-              </Button>
-              <Button
-                onClick={() => setEditMode(false)}
-                variant="contained"
-                color="primary"
-              >
-                cancel
-              </Button>
-              {error ?? <Typography sx={{ color: 'red' }}>{error}</Typography>}
+              ) : (
+                <ProfilePic
+                  key={currentUser?.profilePicture}
+                  firstName={currentUser?.firstName}
+                  path={currentUser?.profilePicture}
+                />
+              )}
+              {userId === user?._id && (
+                <Button
+                  sx={{
+                    right: 0,
+                    position: 'absolute',
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                  }}
+                  onClick={() => setEditMode(true)}
+                  variant="text"
+                  color="primary"
+                >
+                  <Edit />
+                </Button>
+              )}
             </Stack>
-          )}
-        </CardActions>
-
-        <CardContent sx={{ overflow: 'hidden', maxHeight: '100%' }}>
-          <PostList
-            key={`${user?.profilePicture}${user?.username}`}
-            userId={userId}
-          />
-        </CardContent>
-      </Stack>
-    </Stack>
+  
+            {editMode ? (
+              <>
+                <Stack direction="row" spacing={2} sx={{ marginTop: 2 }}>
+                  <label htmlFor="image">
+                    <Button
+                      variant="outlined"
+                      component="span"
+                      fullWidth
+                      sx={{
+                        textTransform: 'none',
+                        textAlign: 'left',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      Change Profile Picture
+                    </Button>
+                  </label>
+                  <input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    style={{ display: 'none' }}
+                  />
+                </Stack>
+                <TextField
+                  label="Username"
+                  value={currentUser?.username || ''}
+                  onChange={(e) =>
+                    setCurrentUser((prevUser) => ({
+                      ...prevUser,
+                      username: e.target.value,
+                    }))
+                  }
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="First Name"
+                  value={currentUser?.firstName || ''}
+                  onChange={(e) =>
+                    setCurrentUser((prevUser) => ({
+                      ...prevUser,
+                      firstName: e.target.value,
+                    }))
+                  }
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                />
+                <TextField
+                  label="Last Name"
+                  value={currentUser?.lastName || ''}
+                  onChange={(e) =>
+                    setCurrentUser((prevUser) => ({
+                      ...prevUser,
+                      lastName: e.target.value,
+                    }))
+                  }
+                  variant="outlined"
+                  fullWidth
+                  margin="normal"
+                />
+              </>
+            ) : (
+              <Box marginTop="1rem">
+                <Stack direction="column" spacing={1}>
+                  <FormLabel sx={{ fontSize: '0.875rem' }}>Username</FormLabel>
+                  <Typography>{currentUser?.username}</Typography>
+  
+                  <FormLabel sx={{ fontSize: '0.875rem' }}>Email</FormLabel>
+                  <Typography>{currentUser?.email}</Typography>
+  
+                  <FormLabel sx={{ fontSize: '0.875rem' }}>First Name</FormLabel>
+                  <Typography>{currentUser?.firstName}</Typography>
+  
+                  <FormLabel sx={{ fontSize: '0.875rem' }}>Last Name</FormLabel>
+                  <Typography>{currentUser?.lastName}</Typography>
+                </Stack>
+              </Box>
+            )}
+          </CardContent>
+  
+          <CardActions>
+            {editMode && (
+              <Stack spacing={1} direction="row">
+                <Button
+                  onClick={handleSubmit}
+                  variant="contained"
+                  color="primary"
+                  sx={{
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                  }}
+                >
+                  Save Changes
+                </Button>
+                <Button
+                  onClick={() => setEditMode(false)}
+                  variant="contained"
+                  color="secondary"
+                  sx={{
+                    textTransform: 'none',
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                  }}
+                >
+                  Cancel
+                </Button>
+              </Stack>
+            )}
+          </CardActions>
+        </Stack>
+      </Box>
+  
+      {/* PostList moved outside the card */}
+      <Box
+        sx={{
+          marginTop: 4,
+          width: '100%',
+          maxWidth: 800,
+        }}
+      >
+        <PostList
+          key={`${user?.profilePicture}${user?.username}`}
+          userId={userId}
+        />
+      </Box>
+    </Box>
   );
 };

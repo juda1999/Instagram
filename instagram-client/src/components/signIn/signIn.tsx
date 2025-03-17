@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import './SignIn.css';
 import { AppContext, User } from '../../App';
 import { CredentialResponse, GoogleLogin } from '@react-oauth/google';
 import { useRequestAction } from '../../hooks';
@@ -11,6 +10,7 @@ import {
   Typography,
   CircularProgress,
   Stack,
+  Box,
 } from '@mui/material';
 
 export const SignIn: React.FC = () => {
@@ -89,67 +89,114 @@ export const SignIn: React.FC = () => {
   };
 
   return (
-    <Stack
-      sx={{ height: '100vh', backgroundColor: '#f0f4f8' }}
+    <Box
+      display="flex"
+      flexDirection="column"
       alignItems="center"
       justifyContent="center"
+      height="100vh"
+      sx={{  
+        backgroundImage: 'url("/house-bg.jpg")',
+       backgroundSize: 'repeat',
+       backgroundPosition: 'center',
+       padding: 2,
+     }}
     >
-      <Typography variant="h4" gutterBottom>
-        Sign In
-      </Typography>
-      {error && (
-        <Typography color="error" variant="body2" sx={{ marginBottom: 2 }}>
-          {error}
-        </Typography>
-      )}
-      <form className="sign-in-form" onSubmit={handleSubmit(onSubmit)}>
-        <Stack spacing={2}>
-          <TextField
-            label="Email"
-            type="email"
-            fullWidth
-            {...register('email', { required: 'Email is required' })}
-            error={!!errors.email}
-            helperText={errors.email?.message as string}
-          />
-          <TextField
-            label="Password"
-            type="password"
-            fullWidth
-            {...register('password', { required: 'Password is required' })}
-            error={!!errors.password}
-            helperText={errors.password?.message as string}
-          />
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            fullWidth
-            disabled={loading}
-          >
-            {loading ? (
-              <CircularProgress size={24} color="inherit" />
-            ) : (
-              'Sign In'
-            )}
-          </Button>
-        </Stack>
-      </form>
-      <GoogleLogin
-        onSuccess={handleGoogleLoginSuccess}
-        onError={() => setError('Google login failed')}
-        useOneTap
-        size="large"
-        theme="outline"
-      />
-      <Button
-        onClick={() => navigate('/signUp')}
-        color="primary"
-        sx={{ marginTop: 2 }}
+      <Box
+        sx={{
+          backgroundColor: '#ffffff', // Card background
+          padding: 4,
+          borderRadius: 2,
+          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Subtle shadow
+          width: '100%',
+          maxWidth: 400,
+        }}
       >
-        Register
-      </Button>
-    </Stack>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{
+            fontWeight: 'bold',
+            color: '#333',
+            textAlign: 'center',
+          }}
+          fontFamily={'cursive'}
+        >
+          Sign In
+        </Typography>
+        {error && (
+          <Typography
+            color="error"
+            variant="body2"
+            sx={{ marginBottom: 2, textAlign: 'center' }}
+          >
+            {error}
+          </Typography>
+        )}
+        <form onSubmit={handleSubmit(onSubmit)} style={{ width: '100%' }}>
+          <Stack spacing={2}>
+            <TextField
+              label="Email"
+              type="email"
+              fullWidth
+              {...register('email', { required: 'Email is required' })}
+              error={!!errors.email}
+              helperText={errors.email?.message as string}
+            />
+            <TextField
+              label="Password"
+              type="password"
+              fullWidth
+              {...register('password', { required: 'Password is required' })}
+              error={!!errors.password}
+              helperText={errors.password?.message as string}
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              fullWidth
+              disabled={loading}
+              sx={{
+                borderRadius: 2, // Rounded button
+                textTransform: 'none', // Disable uppercase text
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#0056b3', // Darker hover color
+                },
+              }}
+            >
+              {loading ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                'Sign In'
+              )}
+            </Button>
+          </Stack>
+        </form>
+        <GoogleLogin
+  onSuccess={handleGoogleLoginSuccess}
+  onError={() => setError('Google login failed')}
+  useOneTap
+  size="large"
+  theme="outline"
+  containerProps={{
+    style: { marginTop: 16, width: '100%' }, // Pass styles here
+  }}
+/>
+        <Button
+          onClick={() => navigate('/signUp')}
+          color="primary"
+          sx={{
+            marginTop: 2,
+            textTransform: 'none',
+            fontWeight: 'bold',
+          }}
+        >
+          Not registered? Register here
+        </Button>
+      </Box>
+    </Box>
   );
 };
 

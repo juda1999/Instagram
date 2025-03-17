@@ -95,99 +95,143 @@ export const CreatePost = () => {
     }
   };
 
-  useEffect(() => {
-    setNavbarItems(
-      <Button
-        sx={{
-          textTransform: 'none',
-          backgroundColor: 'aliceblue',
-          height: '50%',
-        }}
-        onClick={() => navigate('/')}
-      >
-        Posts
-      </Button>
-    );
-  }, []);
-
+  useEffect(() => { setNavbarItems( <Button sx={{ textTransform: 'none', backgroundColor: 'aliceblue', height: '50%', fontFamily: 'cursive' }} onClick={() => navigate('/')} > Posts </Button> ); }, []);
   return (
-    <Box sx={{ padding: 4, maxWidth: 600, margin: '0 auto' }}>
-      <Typography variant="h4" gutterBottom>
-        Create a New Post
-      </Typography>
-      {error && <Typography sx={{ color: 'red' }}>* {error}</Typography>}
-      <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
-        <Stack direction="column" spacing={2}>
-          <FormLabel htmlFor="title">Title</FormLabel>
-          <TextField
-            id="title"
-            variant="outlined"
-            fullWidth
-            {...register('title', { required: 'Title is required' })}
-            error={!!errors.title}
-            helperText={(errors.title?.message as string) || ''}
-          />
-          <Stack direction="column" spacing={1}>
-            <FormLabel htmlFor="image">Image</FormLabel>
-            <label htmlFor="image">
-              <Button
-                variant="outlined"
-                component="span"
-                fullWidth
-                sx={{ textTransform: 'none', textAlign: 'left' }}
-              >
-                Choose Image
-              </Button>
-            </label>
-            <input
-              type="file"
-              id="image"
-              accept="image/*"
-              {...register('image')}
-              style={{ display: 'none' }}
-            />
-          </Stack>
-
-          {image?.[0] && (
-            <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
-              <CardMedia
-                component="img"
-                image={URL.createObjectURL(image[0])}
-                sx={{ width: '100%', maxHeight: 200, objectFit: 'cover' }}
-              />
-            </Box>
-          )}
-
-          <FormLabel htmlFor="description">Description</FormLabel>
-          <TextField
-            id="description"
-            variant="outlined"
-            fullWidth
-            multiline
-            rows={4}
-            {...register('description', {
-              required: 'Description is required',
-            })}
-            error={!!errors.description}
-            helperText={(errors.description?.message as string) || ''}
-          />
-          <Button sx={{ textTransform: 'none' }} onClick={handleSummarize}>
-            <Typography sx={{ marginRight: '16px' }}>
-              Make Better Using AI
-            </Typography>
-            {summarizeLoading && <CircularProgress size="16px" />}
-          </Button>
-          <Button
-            variant="contained"
-            type="submit"
-            fullWidth
-            sx={{ textTransform: 'none' }}
-            disabled={loading}
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+      justifyContent="center"
+      height="100vh"
+      sx={{
+        backgroundImage: 'url("/house-bg.jpg")', // Background image
+        backgroundSize: 'repeat',
+        backgroundPosition: 'center',
+        padding: 2,
+      }}
+    >
+      <Box
+        sx={{
+          backgroundColor: '#ffffff', // Card background
+          padding: 4,
+          borderRadius: 2,
+          boxShadow: '0 4px 10px rgba(0, 0, 0, 0.1)', // Subtle shadow
+          width: '100%',
+          maxWidth: 600,
+        }}
+      >
+        <Typography
+          variant="h4"
+          gutterBottom
+          fontFamily="cursive"
+          sx={{
+            fontWeight: 'bold',
+            color: '#333',
+            textAlign: 'center',
+          }}
+        >
+          Create a New Post
+        </Typography>
+        {error && (
+          <Typography
+            color="error"
+            variant="body2"
+            sx={{ marginBottom: 2, textAlign: 'center' }}
           >
-            {loading ? <CircularProgress size={24} /> : 'Create Post'}
-          </Button>
-        </Stack>
-      </form>
+            {error}
+          </Typography>
+        )}
+        <form onSubmit={handleSubmit(onSubmit)} encType="multipart/form-data">
+          <Stack spacing={2}>
+            <TextField
+              label="Title"
+              variant="outlined"
+              fullWidth
+              {...register('title', { required: 'Title is required' })}
+              error={!!errors.title}
+              helperText={(errors.title?.message as string) || ''}
+            />
+            <Stack direction="column" spacing={1}>
+              <FormLabel htmlFor="image">Image</FormLabel>
+              <label htmlFor="image">
+                <Button
+                  variant="outlined"
+                  component="span"
+                  fullWidth
+                  sx={{
+                    textTransform: 'none',
+                    textAlign: 'left',
+                  }}
+                >
+                  Choose Image
+                </Button>
+              </label>
+              <input
+                type="file"
+                id="image"
+                accept="image/*"
+                {...register('image')}
+                style={{ display: 'none' }}
+              />
+            </Stack>
+            {image?.[0] && (
+              <Box sx={{ mt: 2, display: 'flex', justifyContent: 'center' }}>
+                <CardMedia
+                  component="img"
+                  image={URL.createObjectURL(image[0])}
+                  sx={{
+                    width: '100%',
+                    maxHeight: 200,
+                    objectFit: 'cover',
+                    borderRadius: 2,
+                  }}
+                />
+              </Box>
+            )}
+            <TextField
+              label="Description"
+              variant="outlined"
+              fullWidth
+              multiline
+              rows={4}
+              {...register('description', {
+                required: 'Description is required',
+              })}
+              error={!!errors.description}
+              helperText={(errors.description?.message as string) || ''}
+            />
+            <Button
+              sx={{
+                textTransform: 'none',
+                fontWeight: 'bold',
+              }}
+              onClick={handleSummarize}
+              disabled={summarizeLoading}
+            >
+              Make Better Using AI
+              {summarizeLoading && (
+                <CircularProgress size="16px" sx={{ marginLeft: 1 }} />
+              )}
+            </Button>
+            <Button
+              variant="contained"
+              type="submit"
+              fullWidth
+              sx={{
+                textTransform: 'none',
+                borderRadius: 2,
+                fontWeight: 'bold',
+                '&:hover': {
+                  backgroundColor: '#0056b3',
+                },
+              }}
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={24} /> : 'Create Post'}
+            </Button>
+          </Stack>
+        </form>
+      </Box>
     </Box>
   );
 };

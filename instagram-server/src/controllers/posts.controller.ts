@@ -3,8 +3,11 @@ import { Request, Response } from "express";
 import { BaseController } from "./base.controller";
 import OpenAI from "openai";
 import { upload } from "../server";
+import dotenv from 'dotenv';
 
-const openai = new OpenAI({ baseURL: "https://api.aimlapi.com", apiKey: 'e4db56dcc09e4e5e88b5a60b4f62915c' });
+dotenv.config();
+
+const openai = new OpenAI({ baseURL: "https://api.aimlapi.com", apiKey: process.env.OPENAI_TOKEN });
 
 class PostsController extends BaseController<Post> {
   constructor() {
@@ -43,11 +46,11 @@ class PostsController extends BaseController<Post> {
 
     try {
       const completion = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: "gpt-3.5-turbo",
         messages: [
           {
             role: "user",
-            content: `I am writing a post description.make this sound the best. send back the new text without any additions: "${text}"`,
+            content: `I am writing a post description.make this sound the best.send back the new text without additions: "${text}"`,
           },
         ],
         max_tokens: 256,

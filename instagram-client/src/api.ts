@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 export function getImageRequestPath(path: string) {
-  return `http://localhost:3001/image?path=${path}`;
+  return `${process.env.REACT_APP_SERVER_URL}image?path=${path}`;
 }
 
 const api = axios.create({
-  baseURL: 'http://localhost:3001/',
+  baseURL: process.env.REACT_APP_SERVER_URL,
   headers: {
     'Content-Type': 'application/json',
   },

@@ -26,8 +26,7 @@ export function App() {
   const [navbarItems, setNavbarItems] = useState<ReactNode>([]);
 
   return (
-    /// move secret
-    <GoogleOAuthProvider clientId="552634801343-odnvmi18ds914j0hci9a6mhuqrbuvebk.apps.googleusercontent.com">
+    <GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_TOKEN}>
       <AppContext.Provider
         value={{
           user,

@@ -95,12 +95,12 @@ export const SignIn: React.FC = () => {
       alignItems="center"
       justifyContent="center"
       height="100vh"
-      sx={{  
+      sx={{
         backgroundImage: 'url("/house-bg.jpg")',
-       backgroundSize: 'repeat',
-       backgroundPosition: 'center',
-       padding: 2,
-     }}
+        backgroundSize: 'repeat',
+        backgroundPosition: 'center',
+        padding: 2,
+      }}
     >
       <Box
         sx={{
@@ -175,15 +175,15 @@ export const SignIn: React.FC = () => {
           </Stack>
         </form>
         <GoogleLogin
-  onSuccess={handleGoogleLoginSuccess}
-  onError={() => setError('Google login failed')}
-  useOneTap
-  size="large"
-  theme="outline"
-  containerProps={{
-    style: { marginTop: 16, width: '100%' }, // Pass styles here
-  }}
-/>
+          onSuccess={handleGoogleLoginSuccess}
+          onError={() => setError('Google login failed')}
+          useOneTap
+          size="large"
+          theme="outline"
+          containerProps={{
+            style: { marginTop: 16, width: '100%' }, // Pass styles here
+          }}
+        />
         <Button
           onClick={() => navigate('/signUp')}
           color="primary"

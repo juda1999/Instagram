@@ -4,13 +4,9 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { Document } from 'mongoose';
 import { OAuth2Client } from 'google-auth-library';
-import multer from 'multer';
-import path from 'path';
-import fs from 'fs';
 import { upload } from '../server';
 
-//move to secret
-const client = new OAuth2Client('552634801343-odnvmi18ds914j0hci9a6mhuqrbuvebk.apps.googleusercontent.com');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const register = async (req: Request, res: Response) => {
     const uploadMiddleware = upload.single('profilePicture');
@@ -158,7 +154,7 @@ export const googleLogin = async (req: Request, res: Response) => {
     try {
         const ticket = await client.verifyIdToken({
             idToken: req.body.googleToken,
-            audience: '552634801343-odnvmi18ds914j0hci9a6mhuqrbuvebk.apps.googleusercontent.com',
+            audience: process.env.GOOGLE_CLIENT_ID,
         });
 
         const payload = ticket.getPayload();
@@ -168,6 +164,7 @@ export const googleLogin = async (req: Request, res: Response) => {
         }
 
         const user: User = {
+            username: `${payload.given_name}_${payload.family_name}`,
             email: payload.email ?? "",
             firstName: payload.given_name ?? "",
             lastName: payload.family_name

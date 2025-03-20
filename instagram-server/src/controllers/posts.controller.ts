@@ -72,7 +72,7 @@ class PostsController extends BaseController<Post> {
       }
 
       try {
-        const { title, content, uploadedBy, _id } = req.body;
+        const { title, description, content, uploadedBy, _id } = req.body;
 
         const imagePath = req.file ? `/uploads/${req.file.filename}` : undefined;
         let savedPost;
@@ -80,7 +80,7 @@ class PostsController extends BaseController<Post> {
           savedPost = await this.model.create(
             {
               title,
-              description: content,
+              description,
               photo: imagePath,
               uploadedAt: new Date(),
               uploadedBy
